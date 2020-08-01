@@ -1,0 +1,4 @@
+- cấu trúc file dicom
+- cấu trúc đọc file
+- 
+- drop filter cho các ảnh khác
