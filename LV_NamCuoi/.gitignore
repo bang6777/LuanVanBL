@@ -6,7 +6,7 @@ yarn.lock
 npm-debug.log
 node_modules
 Data
-dist/
+
 coverage/
 test/output.html
 test/TESTS-*.xml
