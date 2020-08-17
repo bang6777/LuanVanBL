@@ -1,13 +1,5 @@
 import "vtk.js/Sources/favicon";
 
-import vtkActor from "vtk.js/Sources/Rendering/Core/Actor";
-import vtkConeSource from "vtk.js/Sources/Filters/Sources/ConeSource";
-import vtkMapper from "vtk.js/Sources/Rendering/Core/Mapper";
-import vtkOpenGLRenderWindow from "vtk.js/Sources/Rendering/OpenGL/RenderWindow";
-import vtkRenderWindow from "vtk.js/Sources/Rendering/Core/RenderWindow";
-import vtkRenderWindowInteractor from "vtk.js/Sources/Rendering/Core/RenderWindowInteractor";
-import vtkRenderer from "vtk.js/Sources/Rendering/Core/Renderer";
-import vtkInteractorStyleTrackballCamera from "vtk.js/Sources/Interaction/Style/InteractorStyleTrackballCamera";
 import vtkColorTransferFunction from "vtk.js/Sources/Rendering/Core/ColorTransferFunction";
 import vtkFullScreenRenderWindow from "vtk.js/Sources/Rendering/Misc/FullScreenRenderWindow";
 import vtkHttpDataSetReader from "vtk.js/Sources/IO/Core/HttpDataSetReader";
@@ -15,74 +7,119 @@ import vtkPiecewiseFunction from "vtk.js/Sources/Common/DataModel/PiecewiseFunct
 import vtkVolume from "vtk.js/Sources/Rendering/Core/Volume";
 import vtkVolumeMapper from "vtk.js/Sources/Rendering/Core/VolumeMapper";
 import vtkImageCropFilter from "vtk.js/Sources/Filters/General/ImageCropFilter";
-import test from "./test.html";
-// import test from "./test.html";
-import contentHeader from "./contentHeader.html";
-import contentBody from "./contentBody.html";
+
+import controlPanel from "./controlPanel.html";
+
 // ----------------------------------------------------------------------------
 // Standard rendering code setup
 // ----------------------------------------------------------------------------
 
-const renderWindow = vtkRenderWindow.newInstance();
-const renderer = vtkRenderer.newInstance({ background: [0.2, 0.3, 0.4] });
-renderWindow.addRenderer(renderer);
+const fullScreenRenderer = vtkFullScreenRenderWindow.newInstance({
+  background: [0, 0, 0]
+});
+const renderer = fullScreenRenderer.getRenderer();
+const renderWindow = fullScreenRenderer.getRenderWindow();
+
+fullScreenRenderer.addController(controlPanel);
+
+function setupControlPanel(data, cropFilter) {
+  const axes = ["I", "J", "K"];
+  const minmax = ["min", "max"];
+
+  const extent = data.getExtent();
+
+  axes.forEach((ax, axi) => {
+    minmax.forEach((m, mi) => {
+      const el = document.querySelector(`.${ax}${m}`);
+      el.setAttribute("min", extent[axi * 2]);
+      el.setAttribute("max", extent[axi * 2 + 1]);
+      el.setAttribute("value", extent[axi * 2 + mi]);
+
+      el.addEventListener("input", () => {
+        const planes = cropFilter.getCroppingPlanes().slice();
+        planes[axi * 2 + mi] = Number(el.value);
+        cropFilter.setCroppingPlanes(...planes);
+        console.log(planes);
+        renderWindow.render();
+      });
+    });
+  });
+}
 
 // ----------------------------------------------------------------------------
-// Simple pipeline ConeSource --> Mapper --> Actor
+// Example code
+// ----------------------------------------------------------------------------
+// Server is not sending the .gz and with the compress header
+// Need to fetch the true file name and uncompress it locally
 // ----------------------------------------------------------------------------
 
-const coneSource = vtkConeSource.newInstance({ height: 1.0 });
+// create filter
+const cropFilter = vtkImageCropFilter.newInstance();
 
-const mapper = vtkMapper.newInstance();
-console.log(coneSource.getOutputPort());
-mapper.setInputConnection(coneSource.getOutputPort());
+const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
 
-const actor = vtkActor.newInstance();
+const actor = vtkVolume.newInstance();
+const mapper = vtkVolumeMapper.newInstance();
+mapper.setSampleDistance(1.1);
 actor.setMapper(mapper);
 
-// ----------------------------------------------------------------------------
-// Add the actor to the renderer and set the camera based on it
-// ----------------------------------------------------------------------------
+// create color and opacity transfer functions
+const ctfun = vtkColorTransferFunction.newInstance();
+ctfun.addRGBPoint(0, 85 / 255.0, 0, 0);
+ctfun.addRGBPoint(95, 1.0, 1.0, 1.0);
+ctfun.addRGBPoint(225, 0.66, 0.66, 0.5);
+ctfun.addRGBPoint(255, 0.3, 1.0, 0.5);
+const ofun = vtkPiecewiseFunction.newInstance();
+ofun.addPoint(0.0, 0.0);
+ofun.addPoint(255.0, 1.0);
+actor.getProperty().setRGBTransferFunction(0, ctfun);
+actor.getProperty().setScalarOpacity(0, ofun);
+actor.getProperty().setScalarOpacityUnitDistance(0, 3.0);
+actor.getProperty().setInterpolationTypeToLinear();
+actor.getProperty().setUseGradientOpacity(0, true);
+actor.getProperty().setGradientOpacityMinimumValue(0, 2);
+actor.getProperty().setGradientOpacityMinimumOpacity(0, 0.0);
+actor.getProperty().setGradientOpacityMaximumValue(0, 20);
+actor.getProperty().setGradientOpacityMaximumOpacity(0, 1.0);
+actor.getProperty().setShade(true);
+actor.getProperty().setAmbient(0.2);
+actor.getProperty().setDiffuse(0.7);
+actor.getProperty().setSpecular(0.3);
+actor.getProperty().setSpecularPower(8.0);
 
-renderer.addActor(actor);
-renderer.resetCamera();
+cropFilter.setInputConnection(reader.getOutputPort());
+mapper.setInputConnection(cropFilter.getOutputPort());
+// const url = './dist/LIDC2.vti';
+reader
+  .setUrl(`https://kitware.github.io/vtk-js/data/volume/LIDC2.vti`)
+  // .setUrl(`./dist/LIDC2.vti`)
+  .then(() => {
+    reader.loadData().then(() => {
+      renderer.addVolume(actor);
 
-// ----------------------------------------------------------------------------
-// Use OpenGL as the backend to view the all this
-// ----------------------------------------------------------------------------
+      const data = reader.getOutputData();
+      console.log(data);
+      cropFilter.setCroppingPlanes(...data.getExtent());
 
-const openglRenderWindow = vtkOpenGLRenderWindow.newInstance();
-renderWindow.addView(openglRenderWindow);
+      setupControlPanel(data, cropFilter);
 
-// ----------------------------------------------------------------------------
-// Create a div section to put this into
-// ----------------------------------------------------------------------------
-document.querySelector("head").innerHTML += contentHeader;
-document.querySelector("body").innerHTML += contentBody;
-// console.log(contentHeader);
-var Container3d = document.getElementById("3d");
-// const container = document.createElement("div");
-// document.querySelector("body").appendChild(container);
-openglRenderWindow.setContainer(Container3d);
+      const interactor = renderWindow.getInteractor();
+      interactor.setDesiredUpdateRate(15.0);
+      renderer.resetCamera();
+      renderWindow.render();
+    });
+  });
 
-// ----------------------------------------------------------------------------
-// Capture size of the container and set it to the renderWindow
-// ----------------------------------------------------------------------------
+// -----------------------------------------------------------
+// Make some variables global so that you can inspect and
+// modify objects in your browser's developer console:
+// -----------------------------------------------------------
 
-const { width, height } = Container3d.getBoundingClientRect();
-openglRenderWindow.setSize(width, height);
-
-// ----------------------------------------------------------------------------
-// Setup an interactor to handle mouse events
-// ----------------------------------------------------------------------------
-
-const interactor = vtkRenderWindowInteractor.newInstance();
-interactor.setView(openglRenderWindow);
-interactor.initialize();
-interactor.bindEvents(Container3d);
-
-// ----------------------------------------------------------------------------
-// Setup interactor style to use
-// ----------------------------------------------------------------------------
-
-interactor.setInteractorStyle(vtkInteractorStyleTrackballCamera.newInstance());
+global.source = reader;
+global.mapper = mapper;
+global.actor = actor;
+global.ctfun = ctfun;
+global.ofun = ofun;
+global.renderer = renderer;
+global.renderWindow = renderWindow;
+global.cropFilter = cropFilter;
