@@ -8,7 +8,7 @@ workboxSW.precache([
   },
   {
     "url": "index.html",
-    "revision": "135cbda7bab1d496acb2046490c0d578"
+    "revision": "2b07fb0274669ea5b12b841f1bf7f45f"
   }
 ])
 

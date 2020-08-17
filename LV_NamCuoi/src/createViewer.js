@@ -6,6 +6,13 @@ import ResizeSensor from 'css-element-queries/src/ResizeSensor';
 import proxyConfiguration from './proxyManagerConfiguration';
 import createImageUI from './createImageUI';
 import createMainUI from './createMainUI';
+import vtkImageCropFilter from 'vtk.js/Sources/Filters/General/ImageCropFilter';
+import 'vtk.js/Sources/favicon';
+import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
+import vtkHttpDataSetReader from 'vtk.js/Sources/IO/Core/HttpDataSetReader';
+import vtkPiecewiseFunction from 'vtk.js/Sources/Common/DataModel/PiecewiseFunction';
+import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
+import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
 // import addKeyboardShortcuts from './addKeyboardShortcuts';
 
 //Làm trống container
@@ -39,7 +46,30 @@ function applyStyle(el, style) {
     el.style[key] = style[key];
   });
 }
+function setupControlPanel(data, cropFilter,renderWindow) {
+  const axes = ['I', 'J', 'K'];
+  const minmax = ['min', 'max'];
 
+  const extent = data.getExtent();
+
+  axes.forEach((ax, axi) => {
+    minmax.forEach((m, mi) => {
+      const el = document.querySelector(`.${ax}${m}`);
+      console.log(el);
+      el.setAttribute('min', extent[axi * 2]);
+      el.setAttribute('max', extent[axi * 2 + 1]);
+      el.setAttribute('value', extent[axi * 2 + mi]);
+
+      el.addEventListener('input', () => {
+        const planes = cropFilter.getCroppingPlanes().slice();
+        planes[axi * 2 + mi] = Number(el.value);
+        cropFilter.setCroppingPlanes(...planes);
+        console.log(planes);
+        renderWindow.render();
+      });
+    });
+  });
+}
 //hàm tạo view quan trọng, rootcontainer là nơi để show images
 const createViewer = (
   rootContainer, 
@@ -47,7 +77,7 @@ const createViewer = (
 ) => 
 {
   emptyContainer(rootContainer);
-
+  console.log("geometries",use2D)
   const proxyManager = vtkProxyManager.newInstance({ proxyConfiguration });
   window.addEventListener('resize', proxyManager.resizeAllViews);
 
@@ -183,12 +213,42 @@ const createViewer = (
       dataArray,
       view,
       isBackgroundDark,
-      use2D
+      use2D,
     );
+    console.log(uiContainer,"view",view)
     const annotationContainer = container.querySelector('.js-se');
     annotationContainer.style.fontFamily = 'monospace';
-  }
 
+    const renderer = view.getRenderer();
+    const renderWindow = view.getRenderWindow();
+
+    const sliceActors = imageRepresentation.getActors();
+    const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
+    const cropFilter = vtkImageCropFilter.newInstance();
+    const mapper = vtkVolumeMapper.newInstance();
+     
+    sliceActors.forEach((actor) => {
+      mapper.setSampleDistance(1.1); 
+      actor.setMapper(mapper);
+      renderer.addVolume(actor);
+      renderer.resetCamera();
+      global.actor = actor;
+    });
+
+    cropFilter.setInputConnection(reader.getOutputPort());
+    mapper.setInputConnection(cropFilter.getOutputPort());
+    cropFilter.setCroppingPlanes(...image.getExtent());
+    setupControlPanel(image, cropFilter,renderWindow);
+    const interactor = renderWindow.getInteractor();
+    interactor.setDesiredUpdateRate(15.0);
+    renderWindow.render();
+
+    global.source = reader;
+    global.mapper = mapper;
+    global.renderer = renderer;
+    global.renderWindow = renderWindow;
+    global.cropFilter = cropFilter;
+  }
   view.resize();
   const resizeSensor = new ResizeSensor(container, function() {
     view.resize();
@@ -209,6 +269,7 @@ const createViewer = (
       return;
     }
     updatingImage = true;
+
     imageSource.setInputData(image);
     imageUI.transferFunctionWidget.setDataArray(image.getPointData().getScalars().getData());
     imageUI.transferFunctionWidget.invokeOpacityChange(imageUI.transferFunctionWidget);
@@ -219,6 +280,7 @@ const createViewer = (
     croppingWidget.resetWidgetState();
     setTimeout(() => {
       imageUI.transferFunctionWidget.render();
+      imageUI.cropSlice.render();
       view.getRenderWindow().render();
       updatingImage = false;
     }, 0);
