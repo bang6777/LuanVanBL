@@ -6,6 +6,13 @@ import ResizeSensor from 'css-element-queries/src/ResizeSensor';
 import proxyConfiguration from './proxyManagerConfiguration';
 import createImageUI from './createImageUI';
 import createMainUI from './createMainUI';
+import vtkImageCropFilter from 'vtk.js/Sources/Filters/General/ImageCropFilter';
+import 'vtk.js/Sources/favicon';
+import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
+import vtkHttpDataSetReader from 'vtk.js/Sources/IO/Core/HttpDataSetReader';
+import vtkPiecewiseFunction from 'vtk.js/Sources/Common/DataModel/PiecewiseFunction';
+import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
+import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
 // import addKeyboardShortcuts from './addKeyboardShortcuts';
 
 //Làm trống container
@@ -24,8 +31,8 @@ const STYLE_CONTAINER = {
   position: 'relative',
   width: '100%',
   height: '100%',
-  minHeight: '200px',
-  minWidth: '450px',
+  minHeight: '100px',
+  minWidth: '200px',
   margin: '0',
   padding: '0',
   top: '0',
@@ -39,7 +46,30 @@ function applyStyle(el, style) {
     el.style[key] = style[key];
   });
 }
+function setupControlPanel(data, cropFilter,renderWindow) {
+  const axes = ['I', 'J', 'K'];
+  const minmax = ['min', 'max'];
 
+  const extent = data.getExtent();
+
+  axes.forEach((ax, axi) => {
+    minmax.forEach((m, mi) => {
+      const el = document.querySelector(`.${ax}${m}`);
+      console.log(el);
+      el.setAttribute('min', extent[axi * 2]);
+      el.setAttribute('max', extent[axi * 2 + 1]);
+      el.setAttribute('value', extent[axi * 2 + mi]);
+
+      el.addEventListener('input', () => {
+        const planes = cropFilter.getCroppingPlanes().slice();
+        planes[axi * 2 + mi] = Number(el.value);
+        cropFilter.setCroppingPlanes(...planes);
+        console.log(planes);
+        renderWindow.render();
+      });
+    });
+  });
+}
 //hàm tạo view quan trọng, rootcontainer là nơi để show images
 const createViewer = (
   rootContainer, 
@@ -47,7 +77,7 @@ const createViewer = (
 ) => 
 {
   emptyContainer(rootContainer);
-
+  console.log("geometries",use2D)
   const proxyManager = vtkProxyManager.newInstance({ proxyConfiguration });
   window.addEventListener('resize', proxyManager.resizeAllViews);
 
@@ -183,12 +213,22 @@ const createViewer = (
       dataArray,
       view,
       isBackgroundDark,
-      use2D
+      use2D,
     );
+    console.log(uiContainer,"view",view)
     const annotationContainer = container.querySelector('.js-se');
     annotationContainer.style.fontFamily = 'monospace';
-  }
 
+    const cropFilter = imageRepresentation.getCropFilter();
+    setupControlPanel(image, cropFilter,view.getRenderWindow());
+    cropFilter.reset();
+    setTimeout(() => {
+      imageUI.transferFunctionWidget.render();
+
+      view.getRenderWindow().render();
+      updatingImage = false;
+    }, 0);
+  }
   view.resize();
   const resizeSensor = new ResizeSensor(container, function() {
     view.resize();
@@ -209,16 +249,19 @@ const createViewer = (
       return;
     }
     updatingImage = true;
+
     imageSource.setInputData(image);
     imageUI.transferFunctionWidget.setDataArray(image.getPointData().getScalars().getData());
     imageUI.transferFunctionWidget.invokeOpacityChange(imageUI.transferFunctionWidget);
     imageUI.transferFunctionWidget.modified();
     croppingWidget.setVolumeMapper(imageRepresentation.getMapper());
     const cropFilter = imageRepresentation.getCropFilter();
+    setupControlPanel(image, cropFilter,view.getRenderWindow());
     cropFilter.reset();
     croppingWidget.resetWidgetState();
     setTimeout(() => {
       imageUI.transferFunctionWidget.render();
+
       view.getRenderWindow().render();
       updatingImage = false;
     }, 0);
