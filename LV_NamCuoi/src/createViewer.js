@@ -219,35 +219,15 @@ const createViewer = (
     const annotationContainer = container.querySelector('.js-se');
     annotationContainer.style.fontFamily = 'monospace';
 
-    const renderer = view.getRenderer();
-    const renderWindow = view.getRenderWindow();
+    const cropFilter = imageRepresentation.getCropFilter();
+    setupControlPanel(image, cropFilter,view.getRenderWindow());
+    cropFilter.reset();
+    setTimeout(() => {
+      imageUI.transferFunctionWidget.render();
 
-    const sliceActors = imageRepresentation.getActors();
-    const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
-    const cropFilter = vtkImageCropFilter.newInstance();
-    const mapper = vtkVolumeMapper.newInstance();
-     
-    sliceActors.forEach((actor) => {
-      mapper.setSampleDistance(1.1); 
-      actor.setMapper(mapper);
-      renderer.addVolume(actor);
-      renderer.resetCamera();
-      global.actor = actor;
-    });
-
-    cropFilter.setInputConnection(reader.getOutputPort());
-    mapper.setInputConnection(cropFilter.getOutputPort());
-    cropFilter.setCroppingPlanes(...image.getExtent());
-    setupControlPanel(image, cropFilter,renderWindow);
-    const interactor = renderWindow.getInteractor();
-    interactor.setDesiredUpdateRate(15.0);
-    renderWindow.render();
-
-    global.source = reader;
-    global.mapper = mapper;
-    global.renderer = renderer;
-    global.renderWindow = renderWindow;
-    global.cropFilter = cropFilter;
+      view.getRenderWindow().render();
+      updatingImage = false;
+    }, 0);
   }
   view.resize();
   const resizeSensor = new ResizeSensor(container, function() {
@@ -276,11 +256,12 @@ const createViewer = (
     imageUI.transferFunctionWidget.modified();
     croppingWidget.setVolumeMapper(imageRepresentation.getMapper());
     const cropFilter = imageRepresentation.getCropFilter();
+    setupControlPanel(image, cropFilter,view.getRenderWindow());
     cropFilter.reset();
     croppingWidget.resetWidgetState();
     setTimeout(() => {
       imageUI.transferFunctionWidget.render();
-      imageUI.cropSlice.render();
+
       view.getRenderWindow().render();
       updatingImage = false;
     }, 0);
