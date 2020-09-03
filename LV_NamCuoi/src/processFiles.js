@@ -14,8 +14,8 @@ import createViewer from "./createViewer";
 
 import style from "./ItkVtkViewer.module.css";
 function getRootContainer(container) {
-  const workContainer = document.querySelector(".display");
-  return workContainer;
+  // const workContainer = document.querySelector(".display");
+  return container;
 }
 
 function createLoadingProgress(container) {

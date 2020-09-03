@@ -23,7 +23,26 @@ function emptyContainer(container) {
     }
   }
 }
+function createLoadingProgress(container) {
+  const rootContainer = getRootContainer(container);
 
+  const loading = document.createElement("div");
+  loading.setAttribute("class", style.loading);
+  rootContainer.appendChild(loading);
+
+  const progressContainer = document.createElement("div");
+  progressContainer.setAttribute("class", style.progress);
+  rootContainer.appendChild(progressContainer);
+
+  function progressCallback(progressEvent) {
+    const percent = Math.floor(
+      (100 * progressEvent.loaded) / progressEvent.total
+    );
+    progressContainer.innerHTML = `${percent}%`;
+  }
+
+  return progressCallback;
+}
 let geometryNameCount = 0 //số lượng tên hình slice
 
 //set css cho container
@@ -46,7 +65,7 @@ function applyStyle(el, style) {
     el.style[key] = style[key];
   });
 }
-function setupControlPanel(data, cropFilter,renderWindow) {
+function setupControlPanel(data, cropFilter,renderWindow,renderWindowx,renderWindowy,renderWindowz) {
   const axes = ['I', 'J', 'K'];
   const minmax = ['min', 'max'];
 
@@ -66,6 +85,9 @@ function setupControlPanel(data, cropFilter,renderWindow) {
         cropFilter.setCroppingPlanes(...planes);
         console.log(planes);
         renderWindow.render();
+        renderWindowx.render();
+        renderWindowy.render();
+        renderWindowz.render();
       });
     });
   });
@@ -76,15 +98,24 @@ const createViewer = (
   { image, geometries, use2D = false, viewerStyle, viewerState }
 ) => 
 {
+  const rootContainerX = document.querySelector('.displayX');
+  const rootContainerY = document.querySelector('.displayY');
+  const rootContainerZ = document.querySelector('.displayZ');
   emptyContainer(rootContainer);
-  console.log("geometries",use2D)
+  emptyContainer(rootContainerX);
+  emptyContainer(rootContainerY);
+  emptyContainer(rootContainerZ);
+  console.log("rootContainer",rootContainer);
+  console.log("rootContainerX",rootContainerX);
+  console.log("rootContainerY",rootContainerY);
+  console.log("rootContainerZ",rootContainerZ);
   const proxyManager = vtkProxyManager.newInstance({ proxyConfiguration });
   window.addEventListener('resize', proxyManager.resizeAllViews);
 
   const container = document.createElement('div');
-  var containerX = document.querySelector('.displayX');
-  var containerY = document.querySelector('.displayY');
-  var containerZ = document.querySelector('.displayZ');
+  const containerX = document.createElement('div');
+  const containerY = document.createElement('div');
+  const containerZ = document.createElement('div');
   const defaultStyle = {
     backgroundColor: [0, 0, 0],
     containerStyle: STYLE_CONTAINER,
@@ -96,11 +127,17 @@ const createViewer = (
       config.backgroundColor[2] <
     1.5;
   emptyContainer(container);
+  emptyContainer(containerX);
+  emptyContainer(containerY);
+  emptyContainer(containerZ);
   applyStyle(container, config.containerStyle || STYLE_CONTAINER);
   applyStyle(containerX, config.containerStyle || STYLE_CONTAINER);
   applyStyle(containerY, config.containerStyle || STYLE_CONTAINER);
   applyStyle(containerZ, config.containerStyle || STYLE_CONTAINER);
   rootContainer.appendChild(container);
+  rootContainerX.appendChild(containerX);
+  rootContainerY.appendChild(containerY);
+  rootContainerZ.appendChild(containerZ);
 
   const testCanvas = document.createElement("canvas");
   const gl = testCanvas.getContext("webgl")
@@ -117,13 +154,17 @@ const createViewer = (
     const suggestionText = document.createTextNode(" This is required to view interactive 3D visualizations.");
     suggestion.appendChild(suggestionText);
     container.appendChild(suggestion);
+    containerX.appendChild(suggestion);
+    containerY.appendChild(suggestion);
+    containerZ.appendChild(suggestion);
     return null;
   }
 
+  const view  = proxyManager.createProxy('Views', 'ItkVtkView');
   const viewx = proxyManager.createProxy('Views', 'ItkVtkView');
   const viewy = proxyManager.createProxy('Views', 'ItkVtkView');
   const viewz = proxyManager.createProxy('Views', 'ItkVtkView');
-  const view = proxyManager.createProxy('Views', 'ItkVtkView');
+
   view.setContainer(container);
   view.setBackground(config.backgroundColor);
   viewx.setContainer(containerX);
@@ -132,6 +173,7 @@ const createViewer = (
   viewy.setBackground(config.backgroundColor);
   viewz.setContainer(containerZ);
   viewz.setBackground(config.backgroundColor);
+  
   const imageSource = proxyManager.createProxy('Sources', 'TrivialProducer', {
     name: 'Image',
   });
@@ -145,7 +187,7 @@ const createViewer = (
     imageSource.setInputData(image);
 
     proxyManager.createRepresentationInAllViews(imageSource);
-    imageRepresentation = proxyManager.getRepresentation(imageSource, view);
+    imageRepresentation = proxyManager.getRepresentation(imageSource, view,viewx,viewy,viewz);
 
     dataArray = image.getPointData().getScalars();
     lookupTableProxy = proxyManager.getLookupTable(dataArray.getName());
@@ -164,10 +206,13 @@ const createViewer = (
     });
 
     if (use2D) {
-      view.setViewMode('ZPlane');
+      // view.setViewMode('ZPlane');
       view.setOrientationAxesVisibility(false);
     } else {
       view.setViewMode('VolumeRendering');
+      viewx.setViewMode('XPlane');
+      viewy.setViewMode('YPlane');
+      viewz.setViewMode('ZPlane');
     }
   }
 
@@ -179,7 +224,7 @@ const createViewer = (
       });
       geometrySource.setInputData(geometry)
       proxyManager.createRepresentationInAllViews(geometrySource);
-      const geometryRepresentation = proxyManager.getRepresentation(geometrySource, view);
+      const geometryRepresentation = proxyManager.getRepresentation(geometrySource, view,viewx,viewy,viewz);
     })
   }
 
@@ -191,7 +236,7 @@ const createViewer = (
       .replace('.', '');
 
   const { uiContainer, croppingWidget, addCroppingPlanesChangedHandler, addResetCropHandler } = createMainUI(
-    rootContainer,
+    
     viewerDOMId,
     isBackgroundDark,
     use2D,
@@ -212,278 +257,39 @@ const createViewer = (
       imageRepresentation,
       dataArray,
       view,
+      viewx,
+      viewy,
+      viewz,
       isBackgroundDark,
       use2D,
     );
-    console.log(uiContainer,"view",view)
-    const annotationContainer = container.querySelector('.js-se');
-    annotationContainer.style.fontFamily = 'monospace';
+      console.log("view",view);
+      console.log("viewx",viewx);
+      console.log("viewy",viewy);
+      console.log("viewz",viewz);
+      const annotationContainer = container.querySelector('.js-se');
+      annotationContainer.style.fontFamily = 'monospace';
 
-    const cropFilter = imageRepresentation.getCropFilter();
-    setupControlPanel(image, cropFilter,view.getRenderWindow());
-    cropFilter.reset();
-    setTimeout(() => {
-      imageUI.transferFunctionWidget.render();
+      const annotationContainerX = containerX.querySelector('.js-se');
+      annotationContainerX.style.fontFamily = 'monospace';
 
-      view.getRenderWindow().render();
-      updatingImage = false;
-    }, 0);
-  }
-  view.resize();
-  const resizeSensor = new ResizeSensor(container, function() {
-    view.resize();
-  });
-  proxyManager.renderAllViews();
+      const annotationContainerY = containerY.querySelector('.js-se');
+      annotationContainerY.style.fontFamily = 'monospace';
 
-  setTimeout(view.resetCamera, 1);
+      const annotationContainerZ = containerZ.querySelector('.js-se');
+      annotationContainerZ.style.fontFamily = 'monospace';
 
-  const publicAPI = {};
-
-  publicAPI.renderLater = () => {
-    view.renderLater();
-  }
-
-  let updatingImage = false;
-  const setImage = (image) => {
-    if (updatingImage) {
-      return;
+      const cropFilter = imageRepresentation.getCropFilter();
+      setupControlPanel(image, cropFilter,view.getRenderWindow(),viewx.getRenderWindow(),viewy.getRenderWindow(),viewz.getRenderWindow());
+      cropFilter.reset(); 
     }
-    updatingImage = true;
+    view.resize(); 
+    viewx.resize();
+    viewy.resize();
+    viewz.resize();
+    // addKeyboardShortcuts(rootContainer, publicAPI, viewerDOMId);
 
-    imageSource.setInputData(image);
-    imageUI.transferFunctionWidget.setDataArray(image.getPointData().getScalars().getData());
-    imageUI.transferFunctionWidget.invokeOpacityChange(imageUI.transferFunctionWidget);
-    imageUI.transferFunctionWidget.modified();
-    croppingWidget.setVolumeMapper(imageRepresentation.getMapper());
-    const cropFilter = imageRepresentation.getCropFilter();
-    setupControlPanel(image, cropFilter,view.getRenderWindow());
-    cropFilter.reset();
-    croppingWidget.resetWidgetState();
-    setTimeout(() => {
-      imageUI.transferFunctionWidget.render();
-
-      view.getRenderWindow().render();
-      updatingImage = false;
-    }, 0);
-  }
-  publicAPI.setImage = macro.throttle(setImage, 100);
-
-  // Start collapsed on mobile devices or small pages
-  // if (window.screen.availWidth < 768 || window.screen.availHeight < 800) {
-  //   publicAPI.setUserInterfaceCollapsed(true);
-  // }
-
-
-  publicAPI.captureImage = () => {
-    return view.captureImage();
-  }
-
-  publicAPI.subscribeCroppingPlanesChanged = (handler) => {
-    return addCroppingPlanesChangedHandler(handler);
-  }
-
-  publicAPI.subscribeResetCrop = (handler) => {
-    return addResetCropHandler(handler);
-  }
-
-  const colorMapSelector = document.getElementById(`${viewerDOMId}-colorMapSelector`);
-
-  const selectColorMapHandlers = [];
-  const selectColorMapListener = (event) => {
-    const value = colorMapSelector.value;
-    selectColorMapHandlers.forEach((handler) => {
-      handler.call(null, value);
-    })
-  }
-  if (colorMapSelector !== null) {
-    colorMapSelector.addEventListener('change', selectColorMapListener);
-  }
-
-  publicAPI.subscribeSelectColorMap = (handler) => {
-    const index = selectColorMapHandlers.length;
-    selectColorMapHandlers.push(handler);
-    function unsubscribe() {
-      selectColorMapHandlers[index] = null;
-    }
-    return Object.freeze({ unsubscribe });
-  }
-
-  publicAPI.setColorMap = (colorMap) => {
-    if (colorMapSelector !== null) {
-      const currentColorMap = colorMapSelector.value;
-      if (currentColorMap !== colorMap) {
-        colorMapSelector.value = colorMap;
-        imageUI.updateColorMap();
-      }
-    }
-  }
-
-
-  if (!use2D) {
-    const xPlaneButton = document.getElementById(`${viewerDOMId}-xPlaneButton`);
-    const yPlaneButton = document.getElementById(`${viewerDOMId}-yPlaneButton`);
-    const zPlaneButton = document.getElementById(`${viewerDOMId}-zPlaneButton`);
-    const volumeRenderingButton = document.getElementById(`${viewerDOMId}-volumeRenderingButton`);
-
-    const viewModeChangedHandlers = [];
-    const xPlaneButtonListener = (event) => {
-      viewModeChangedHandlers.forEach((handler) => {
-        handler.call(null, 'XPlane');
-      })
-    }
-    xPlaneButton.addEventListener('click', xPlaneButtonListener)
-    const yPlaneButtonListener = (event) => {
-      viewModeChangedHandlers.forEach((handler) => {
-        handler.call(null, 'YPlane');
-      })
-    }
-    yPlaneButton.addEventListener('click', yPlaneButtonListener)
-    const zPlaneButtonListener = (event) => {
-      viewModeChangedHandlers.forEach((handler) => {
-        handler.call(null, 'ZPlane');
-      })
-    }
-    zPlaneButton.addEventListener('click', zPlaneButtonListener)
-    const volumeRenderingButtonListener = (event) => {
-      viewModeChangedHandlers.forEach((handler) => {
-        handler.call(null, 'VolumeRendering');
-      })
-    }
-    volumeRenderingButton.addEventListener('click', volumeRenderingButtonListener)
-
-    publicAPI.subscribeViewModeChanged = (handler) => {
-      const index = viewModeChangedHandlers.length;
-      viewModeChangedHandlers.push(handler);
-      function unsubscribe() {
-        viewModeChangedHandlers[index] = null;
-      }
-      return Object.freeze({ unsubscribe });
-    }
-
-    publicAPI.setViewMode = (mode) => {
-      if (!image) {
-        return
-      }
-      switch(mode) {
-      case 'XPlane':
-        const xPlaneButton = document.getElementById(`${viewerDOMId}-xPlaneButton`);
-        xPlaneButton.click();
-        break;
-      case 'YPlane':
-        const yPlaneButton = document.getElementById(`${viewerDOMId}-yPlaneButton`);
-        yPlaneButton.click();
-        break;
-      case 'ZPlane':
-        const zPlaneButton = document.getElementById(`${viewerDOMId}-zPlaneButton`);
-        zPlaneButton.click();
-        break;
-      case 'VolumeRendering':
-        const volumeRenderingButton = document.getElementById(`${viewerDOMId}-volumeRenderingButton`);
-        volumeRenderingButton.click();
-        break;
-      default:
-        console.error('Invalid view mode: ' + mode);
-      }
-    }
-
-
-    const xSliceChangedHandlers = [];
-    const xSliceChangedListener = (event) => {
-      xSliceChangedHandlers.forEach((handler) => {
-        handler.call(null, event.target.valueAsNumber);
-      })
-    }
-    const xSliceElement = document.getElementById(`${viewerDOMId}-xSlice`);
-    xSliceElement && xSliceElement.addEventListener('input', xSliceChangedListener);
-    publicAPI.subscribeXSliceChanged = (handler) => {
-      const index = xSliceChangedHandlers.length;
-      xSliceChangedHandlers.push(handler);
-      function unsubscribe() {
-        xSliceChangedHandlers[index] = null;
-      }
-      return Object.freeze({ unsubscribe });
-    }
-
-    const ySliceChangedHandlers = [];
-    const ySliceChangedListener = (event) => {
-      ySliceChangedHandlers.forEach((handler) => {
-        handler.call(null, event.target.valueAsNumber);
-      })
-    }
-    const ySliceElement = document.getElementById(`${viewerDOMId}-ySlice`);
-    ySliceElement && ySliceElement.addEventListener('input', ySliceChangedListener);
-    publicAPI.subscribeYSliceChanged = (handler) => {
-      const index = ySliceChangedHandlers.length;
-      ySliceChangedHandlers.push(handler);
-      function unsubscribe() {
-        ySliceChangedHandlers[index] = null;
-      }
-      return Object.freeze({ unsubscribe });
-    }
-
-    const zSliceChangedHandlers = [];
-    const zSliceChangedListener = (event) => {
-      zSliceChangedHandlers.forEach((handler) => {
-        handler.call(null, event.target.valueAsNumber);
-      })
-    }
-    const zSliceElement = document.getElementById(`${viewerDOMId}-zSlice`);
-    zSliceElement && zSliceElement.addEventListener('input', zSliceChangedListener);
-    publicAPI.subscribeZSliceChanged = (handler) => {
-      const index = zSliceChangedHandlers.length;
-      zSliceChangedHandlers.push(handler);
-      function unsubscribe() {
-        zSliceChangedHandlers[index] = null;
-      }
-      return Object.freeze({ unsubscribe });
-    }
-
-
-
-    const gradientOpacitySlider = document.getElementById(`${viewerDOMId}-gradientOpacitySlider`);
-
-    const gradientOpacitySliderHandlers = [];
-    const gradientOpacitySliderListener = (event) => {
-      const value = gradientOpacitySlider.value;
-      gradientOpacitySliderHandlers.forEach((handler) => {
-        handler.call(null, value);
-      })
-    }
-    gradientOpacitySlider && gradientOpacitySlider.addEventListener('change', gradientOpacitySliderListener)
-
-    publicAPI.subscribeGradientOpacityChanged = (handler) => {
-      const index = gradientOpacitySliderHandlers.length;
-      gradientOpacitySliderHandlers.push(handler);
-      function unsubscribe() {
-        gradientOpacitySliderHandlers[index] = null;
-      }
-      return Object.freeze({ unsubscribe });
-    }
-
-    publicAPI.setGradientOpacity = (opacity) => {
-      const current_opacity = parseFloat(gradientOpacitySlider.value);
-      if (current_opacity !== parseFloat(opacity)) {
-        gradientOpacitySlider.value = opacity;
-        imageUI.updateGradientOpacity()
-      }
-    }
-  }
-
-
-  publicAPI.getViewProxy = () => {
-    return view;
-  }
-
-  //publicAPI.saveState = () => {
-    //// todo
-  //}
-
-  //publicAPI.loadState = (state) => {
-    //// todo
-  //}
-  // addKeyboardShortcuts(rootContainer, publicAPI, viewerDOMId);
-
-  return publicAPI;
+  return ;
 };
 
 export default createViewer;

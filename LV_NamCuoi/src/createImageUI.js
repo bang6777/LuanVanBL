@@ -10,7 +10,13 @@ function createTransferFunctionWidget(
   piecewiseFunctionProxy,
   dataArray,
   view,
+  viewx,
+  viewy,
+  viewz,
   renderWindow,
+  renderWindowx,
+  renderWindowy,
+  renderWindowz,
   use2D
 ) {
   const uiContainer = document.querySelector(".table");
@@ -55,9 +61,18 @@ function createTransferFunctionWidget(
   transferFunctionWidget.onAnimation((start) => {
     if (start) {
       renderWindow.getInteractor().requestAnimation(transferFunctionWidget);
+      renderWindowx.getInteractor().requestAnimation(transferFunctionWidget);
+      renderWindowy.getInteractor().requestAnimation(transferFunctionWidget);
+      renderWindowz.getInteractor().requestAnimation(transferFunctionWidget);
     } else {
       renderWindow.getInteractor().cancelAnimation(transferFunctionWidget);
       renderWindow.render();
+      renderWindowx.getInteractor().cancelAnimation(transferFunctionWidget);
+      renderWindowx.render();
+      renderWindowy.getInteractor().cancelAnimation(transferFunctionWidget);
+      renderWindowy.render();
+      renderWindowz.getInteractor().cancelAnimation(transferFunctionWidget);
+      renderWindowz.render();
     }
   });
   transferFunctionWidget.onOpacityChange(() => {
@@ -75,6 +90,15 @@ function createTransferFunctionWidget(
     if (!renderWindow.getInteractor().isAnimating()) {
       renderWindow.render();
     }
+    if (!renderWindowx.getInteractor().isAnimating()) {
+      renderWindowx.render();
+    }
+    if (!renderWindowy.getInteractor().isAnimating()) {
+      renderWindowy.render();
+    }
+    if (!renderWindowz.getInteractor().isAnimating()) {
+      renderWindowz.render();
+    }
   });
 
   // Manage update when lookupTable changes
@@ -82,6 +106,15 @@ function createTransferFunctionWidget(
     transferFunctionWidget.render();
     if (!renderWindow.getInteractor().isAnimating()) {
       renderWindow.render();
+    }
+    if (!renderWindowx.getInteractor().isAnimating()) {
+      renderWindowx.render();
+    }
+    if (!renderWindowy.getInteractor().isAnimating()) {
+      renderWindowy.render();
+    }
+    if (!renderWindowz.getInteractor().isAnimating()) {
+      renderWindowz.render();
     }
   });
 
@@ -152,6 +185,12 @@ function createTransferFunctionWidget(
   // Add range manipulator
   view.getInteractorStyle2D().addMouseManipulator(rangeManipulator);
   view.getInteractorStyle3D().addMouseManipulator(rangeManipulator);
+  viewx.getInteractorStyle2D().addMouseManipulator(rangeManipulator);
+  viewx.getInteractorStyle3D().addMouseManipulator(rangeManipulator);
+  viewy.getInteractorStyle2D().addMouseManipulator(rangeManipulator);
+  viewy.getInteractorStyle3D().addMouseManipulator(rangeManipulator);
+  viewz.getInteractorStyle2D().addMouseManipulator(rangeManipulator);
+  viewz.getInteractorStyle3D().addMouseManipulator(rangeManipulator);
 
   const opacityRangeManipulator = vtkMouseRangeManipulator.newInstance({
     button: 3, // Right mouse
@@ -191,7 +230,12 @@ function createTransferFunctionWidget(
   );
   view.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
   view.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
-
+  viewx.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
+  viewx.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
+  viewy.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
+  viewy.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
+  viewz.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
+  viewz.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
   return transferFunctionWidget;
 }
 
@@ -200,7 +244,10 @@ function createColorPresetSelector(
   uiContainer,
   viewerDOMId,
   lookupTableProxy,
-  renderWindow
+  renderWindow,
+  renderWindowx,
+  renderWindowy,
+  renderWindowz
 ) {
   //const presetNames = vtkColorMaps.rgbPresetNames;
   // More selective
@@ -296,6 +343,9 @@ function createColorPresetSelector(
   function updateColorMap(event) {
     lookupTableProxy.setPresetName(presetSelector.value);
     renderWindow.render();
+    renderWindowx.render();
+    renderWindowy.render();
+    renderWindowz.render();
   }
   presetSelector.addEventListener('change', updateColorMap);
   uiContainer.appendChild(presetSelector);
@@ -311,7 +361,10 @@ function createGradientOpacitySlider(
   viewerDOMId,
   isBackgroundDark,
   volumeRepresentation,
-  renderWindow
+  renderWindow,
+  renderWindowx,
+  renderWindowy,
+  renderWindowz
 ) {
   const contrastSensitiveStyle = getContrastSensitiveStyle(
     ['invertibleButton'],
@@ -335,6 +388,9 @@ function createGradientOpacitySlider(
     const value = Number(edgeElement.value);
     volumeRepresentation.setEdgeGradient(value);
     renderWindow.render();
+    renderWindowx.render();
+    renderWindowy.render();
+    renderWindowz.render();
   }
   edgeElement.addEventListener('input', updateGradientOpacity);
   updateGradientOpacity();
@@ -351,11 +407,16 @@ function createImageUI(
   volumeRepresentation,
   dataArray,
   view,
+  viewx,
+  viewy,
+  viewz,
   isBackgroundDark,
   use2D
 ) {
   const renderWindow = view.getRenderWindow();
-
+  const renderWindowx = viewx.getRenderWindow();
+  const renderWindowy = viewy.getRenderWindow();
+  const renderWindowz = viewz.getRenderWindow();
   const imageUIGroup = document.createElement('div');
   imageUIGroup.setAttribute('class', style.uiGroup);
 
@@ -367,7 +428,10 @@ function createImageUI(
       presetRow,
       viewerDOMId,
       lookupTableProxy,
-      renderWindow
+      renderWindow,
+      renderWindowx,
+      renderWindowy,
+      renderWindowz
     );
     presetRow.className += ` ${viewerDOMId}-toggle`;
     imageUIGroup.appendChild(presetRow);
@@ -380,7 +444,13 @@ function createImageUI(
     piecewiseFunctionProxy,
     dataArray,
     view,
+    viewx,
+    viewy,
+    viewz,
     renderWindow,
+    renderWindowx,
+    renderWindowy,
+    renderWindowz,
     use2D
   );
 
@@ -395,7 +465,10 @@ function createImageUI(
       viewerDOMId,
       isBackgroundDark,
       volumeRepresentation,
-      renderWindow
+      renderWindow,
+      renderWindowx,
+      renderWindowy,
+      renderWindowz
     );
     imageUIGroup.appendChild(volumeRenderingRow);
   }

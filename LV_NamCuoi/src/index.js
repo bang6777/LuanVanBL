@@ -10,9 +10,9 @@ function preventDefaults(e) {
   e.stopPropagation();
 }
 function getRootContainer(container) {
-  const workContainer = document.querySelector('.display');
+  // const workContainer = document.querySelector('.display');
 
-  return workContainer ;
+  return container ;
 }
 function createLoadingProgress(container) {
   const rootContainer = getRootContainer(container);
@@ -101,7 +101,19 @@ export function initializeEmbeddedViewers() {
     return;
   }
   const viewers = document.querySelectorAll('.display');
+  const viewersX = document.querySelectorAll('.displayX');
+  const viewersY = document.querySelectorAll('.displayY');
+  const viewersZ = document.querySelectorAll('.displayZ');
   let count = viewers.length;
+  let countX = viewersX.length;
+  let countY = viewersY.length;
+  let countZ = viewersZ.length;
+  whilesloop(count,viewers);
+  whilesloop(countX,viewersX);
+  whilesloop(countY,viewersY);
+  whilesloop(countZ,viewersZ);
+}
+function whilesloop(count,viewers){
   while (count--) {
     const el = viewers[count];
     if (!el.dataset.loaded) {
@@ -132,10 +144,66 @@ export function initializeEmbeddedViewers() {
           }
         }
       );
+      createViewerFromUrl(el, el.dataset.url, !!el.dataset.slice).then(
+        (viewerX) => {
+          // Background color handling
+          if (el.dataset.backgroundColor && viewerX.renderWindow) {
+            const color = el.dataset.backgroundColor;
+            const bgColor = [
+              color.slice(0, 2),
+              color.slice(2, 4),
+              color.slice(4, 6),
+            ].map((v) => parseInt(v, 16) / 255);
+            viewerX.renderer.setBackground(bgColor);
+          }
+
+          // Render
+          if (viewerX.renderWindow && viewerX.renderWindow.render) {
+            viewerX.renderWindow.render();
+          }
+        }
+      );
+      createViewerFromUrl(el, el.dataset.url, !!el.dataset.slice).then(
+        (viewerY) => {
+          // Background color handling
+          if (el.dataset.backgroundColor && viewerY.renderWindow) {
+            const color = el.dataset.backgroundColor;
+            const bgColor = [
+              color.slice(0, 2),
+              color.slice(2, 4),
+              color.slice(4, 6),
+            ].map((v) => parseInt(v, 16) / 255);
+            viewerY.renderer.setBackground(bgColor);
+          }
+
+          // Render
+          if (viewerY.renderWindow && viewerY.renderWindow.render) {
+            viewerY.renderWindow.render();
+          }
+        }
+      );
+      createViewerFromUrl(el, el.dataset.url, !!el.dataset.slice).then(
+        (viewerZ) => {
+          // Background color handling
+          if (el.dataset.backgroundColor && viewerZ.renderWindow) {
+            const color = el.dataset.backgroundColor;
+            const bgColor = [
+              color.slice(0, 2),
+              color.slice(2, 4),
+              color.slice(4, 6),
+            ].map((v) => parseInt(v, 16) / 255);
+            viewerZ.renderer.setBackground(bgColor);
+          }
+
+          // Render
+          if (viewerZ.renderWindow && viewerZ.renderWindow.render) {
+            viewerZ.renderWindow.render();
+          }
+        }
+      );
     }
   }
 }
-
 export function processParameters(
   container,
   addOnParameters = {},

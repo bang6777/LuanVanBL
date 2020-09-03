@@ -6,7 +6,7 @@ import getContrastSensitiveStyle from './getContrastSensitiveStyle';
 import style from './ItkVtkViewer.module.css';
 var container = document.querySelector('.display');
 function createMainUI(
-  rootContainer,
+
   viewerDOMId,
   isBackgroundDark,
   use2D,
@@ -16,14 +16,11 @@ function createMainUI(
   viewx,
   viewy,
   viewz
-) {
-  viewx.setViewMode('XPlane');
-  viewy.setViewMode('YPlane');
-  viewz.setViewMode('ZPlane');
-  view.setViewMode('VolumeRendering');
+  ) 
+  {
   const uiContainertb = document.querySelector(".control")
   const uiContainer = document.createElement('div');
-  rootContainer.appendChild(uiContainer);
+
   uiContainertb.appendChild(uiContainer);
   uiContainer.setAttribute('class', style.uiContainer); 
   const contrastSensitiveStyle = getContrastSensitiveStyle(
@@ -41,96 +38,18 @@ function createMainUI(
 
   function setViewModeXPlane() {
     view.setViewMode('XPlane');
-    document.getElementById(`${viewerDOMId}-xPlaneButton`).checked = true;
-    document.getElementById(`${viewerDOMId}-yPlaneButton`).checked = false;
-    document.getElementById(`${viewerDOMId}-zPlaneButton`).checked = false;
-    document.getElementById(
-      `${viewerDOMId}-volumeRenderingButton`
-    ).checked = false;
-    if (imageRepresentation) {
-      const volumeRenderingRow = uiContainer.querySelector(
-        `.${viewerDOMId}-volumeRendering`
-      );
-      volumeRenderingRow.style.display = 'none';
-      const xPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-x-plane-row`);
-      xPlaneRow.style.display = 'flex';
-      const yPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-y-plane-row`);
-      yPlaneRow.style.display = 'none';
-      const zPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-z-plane-row`);
-      zPlaneRow.style.display = 'none';
-    }
+    viewx.setViewMode('XPlane');
   }
   function setViewModeYPlane() {
     view.setViewMode('YPlane');
-    document.getElementById(`${viewerDOMId}-xPlaneButton`).checked = false;
-    document.getElementById(`${viewerDOMId}-yPlaneButton`).checked = true;
-    document.getElementById(`${viewerDOMId}-zPlaneButton`).checked = false;
-    document.getElementById(
-      `${viewerDOMId}-volumeRenderingButton`
-    ).checked = false;
-    if (imageRepresentation) {
-      const volumeRenderingRow = uiContainer.querySelector(
-        `.${viewerDOMId}-volumeRendering`
-      );
-      volumeRenderingRow.style.display = 'none';
-      const xPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-x-plane-row`);
-      xPlaneRow.style.display = 'none';
-      const yPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-y-plane-row`);
-      yPlaneRow.style.display = 'flex';
-      const zPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-z-plane-row`);
-      zPlaneRow.style.display = 'none';
-    }
+    viewy.setViewMode('YPlane');
   }
   function setViewModeZPlane() {
     view.setViewMode('ZPlane');
-    document.getElementById(`${viewerDOMId}-xPlaneButton`).checked = false;
-    document.getElementById(`${viewerDOMId}-yPlaneButton`).checked = false;
-    document.getElementById(`${viewerDOMId}-zPlaneButton`).checked = true;
-    document.getElementById(
-      `${viewerDOMId}-volumeRenderingButton`
-    ).checked = false;
-    if (imageRepresentation) {
-      const volumeRenderingRow = uiContainer.querySelector(
-        `.${viewerDOMId}-volumeRendering`
-      );
-      volumeRenderingRow.style.display = 'none';
-      const xPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-x-plane-row`);
-      xPlaneRow.style.display = 'none';
-      const yPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-y-plane-row`);
-      yPlaneRow.style.display = 'none';
-      const zPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-z-plane-row`);
-      zPlaneRow.style.display = 'flex';
-    }
-  }
+    viewz.setViewMode('ZPlane');}
   function setViewModeVolumeRendering() {
     view.setViewMode('VolumeRendering');
-    document.getElementById(`${viewerDOMId}-xPlaneButton`).checked = false;
-    document.getElementById(`${viewerDOMId}-yPlaneButton`).checked = false;
-    document.getElementById(`${viewerDOMId}-zPlaneButton`).checked = false;
-    document.getElementById(
-      `${viewerDOMId}-volumeRenderingButton`
-    ).checked = true;
-    if (imageRepresentation) {
-      const volumeRenderingRow = uiContainer.querySelector(
-        `.${viewerDOMId}-volumeRendering`
-      );
-      volumeRenderingRow.style.display = 'flex';
-      const viewPlanes = document.getElementById(
-        `${viewerDOMId}-toggleSlicingPlanesButton`
-      ).checked;
-      const xPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-x-plane-row`);
-      const yPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-y-plane-row`);
-      const zPlaneRow = uiContainer.querySelector(`.${viewerDOMId}-z-plane-row`);
-      if (viewPlanes) {
-        xPlaneRow.style.display = 'flex';
-        yPlaneRow.style.display = 'flex';
-        zPlaneRow.style.display = 'flex';
-      } else {
-        xPlaneRow.style.display = 'none';
-        yPlaneRow.style.display = 'none';
-        zPlaneRow.style.display = 'none';
-      }
-    }
+   
   }
   if (!use2D) {
     const xPlaneButton = document.createElement('div');
