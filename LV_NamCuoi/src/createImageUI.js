@@ -88,16 +88,11 @@ function createTransferFunctionWidget(
     lookupTable.updateRange();
 
     if (!renderWindow.getInteractor().isAnimating()) {
-      renderWindow.render();
-    }
-    if (!renderWindowx.getInteractor().isAnimating()) {
-      renderWindowx.render();
-    }
-    if (!renderWindowy.getInteractor().isAnimating()) {
-      renderWindowy.render();
-    }
-    if (!renderWindowz.getInteractor().isAnimating()) {
-      renderWindowz.render();
+        renderWindow.render();
+
+        renderWindowx.render();
+        renderWindowy.render();
+        renderWindowz.render();
     }
   });
 
@@ -105,16 +100,10 @@ function createTransferFunctionWidget(
   lookupTable.onModified(() => {
     transferFunctionWidget.render();
     if (!renderWindow.getInteractor().isAnimating()) {
-      renderWindow.render();
-    }
-    if (!renderWindowx.getInteractor().isAnimating()) {
-      renderWindowx.render();
-    }
-    if (!renderWindowy.getInteractor().isAnimating()) {
-      renderWindowy.render();
-    }
-    if (!renderWindowz.getInteractor().isAnimating()) {
-      renderWindowz.render();
+        renderWindow.render();
+        renderWindowx.render();
+        renderWindowy.render();
+        renderWindowz.render();
     }
   });
 
@@ -459,7 +448,9 @@ function createImageUI(
     const volumeRenderingRow = document.createElement('div');
     volumeRenderingRow.setAttribute('class', style.uiRow);
     volumeRenderingRow.className += ` ${viewerDOMId}-volumeRendering ${viewerDOMId}-toggle`;
-
+    volumeRenderingRow.className += ` ${viewerDOMId}-XPlane ${viewerDOMId}-toggle`;
+    volumeRenderingRow.className += ` ${viewerDOMId}-YPlane ${viewerDOMId}-toggle`;
+    volumeRenderingRow.className += ` ${viewerDOMId}-ZPlane ${viewerDOMId}-toggle`;
     updateGradientOpacity = createGradientOpacitySlider(
       volumeRenderingRow,
       viewerDOMId,

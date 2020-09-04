@@ -67,7 +67,7 @@ const processFiles = (container, { files, use2D }) => {
         const imageData = vtkITKHelper.convertItkToVtkImage(itkImage);
         const is3D = itkImage.imageType.dimension === 3 && !use2D;
         resolve(
-          createViewer(container, {
+          createViewer(container,containerX,containerY,containerZ, {
             image: imageData,
             use2D: !is3D
           })
@@ -175,7 +175,7 @@ const processFiles = (container, { files, use2D }) => {
           const any3D = !dataSets.map(({ is3D }) => is3D).every(is3D => !is3D);
           const is3D = any3D && !use2D;
           resolve(
-            createViewer(container, {
+            createViewer(container,containerX,containerY,containerZ, {
               image,
               geometries,
               use2D: !is3D

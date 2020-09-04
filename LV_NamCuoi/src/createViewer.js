@@ -22,28 +22,8 @@ function emptyContainer(container) {
       container.removeChild(container.firstChild);
     }
   }
-}
-function createLoadingProgress(container) {
-  const rootContainer = getRootContainer(container);
-
-  const loading = document.createElement("div");
-  loading.setAttribute("class", style.loading);
-  rootContainer.appendChild(loading);
-
-  const progressContainer = document.createElement("div");
-  progressContainer.setAttribute("class", style.progress);
-  rootContainer.appendChild(progressContainer);
-
-  function progressCallback(progressEvent) {
-    const percent = Math.floor(
-      (100 * progressEvent.loaded) / progressEvent.total
-    );
-    progressContainer.innerHTML = `${percent}%`;
   }
-
-  return progressCallback;
-}
-let geometryNameCount = 0 //số lượng tên hình slice
+  let geometryNameCount = 0 //số lượng tên hình slice
 
 //set css cho container
 const STYLE_CONTAINER = {
@@ -65,7 +45,7 @@ function applyStyle(el, style) {
     el.style[key] = style[key];
   });
 }
-function setupControlPanel(data, cropFilter,renderWindow,renderWindowx,renderWindowy,renderWindowz) {
+function setupControlPanel(data, cropFilter,renderWindow) {
   const axes = ['I', 'J', 'K'];
   const minmax = ['min', 'max'];
 
@@ -85,22 +65,17 @@ function setupControlPanel(data, cropFilter,renderWindow,renderWindowx,renderWin
         cropFilter.setCroppingPlanes(...planes);
         console.log(planes);
         renderWindow.render();
-        renderWindowx.render();
-        renderWindowy.render();
-        renderWindowz.render();
       });
     });
   });
 }
 //hàm tạo view quan trọng, rootcontainer là nơi để show images
 const createViewer = (
-  rootContainer, 
+  rootContainer, rootContainerX,rootContainerY,rootContainerZ,
   { image, geometries, use2D = false, viewerStyle, viewerState }
 ) => 
 {
-  const rootContainerX = document.querySelector('.displayX');
-  const rootContainerY = document.querySelector('.displayY');
-  const rootContainerZ = document.querySelector('.displayZ');
+  
   emptyContainer(rootContainer);
   emptyContainer(rootContainerX);
   emptyContainer(rootContainerY);
@@ -181,14 +156,19 @@ const createViewer = (
   let piecewiseFunction = null;
   let dataArray = null;
   let imageRepresentation = null;
+  let imageRepresentationX = null;
+  let imageRepresentationY = null;
+  let imageRepresentationZ = null;
   let imageUI = null;
   let update
   if (image) {
     imageSource.setInputData(image);
 
     proxyManager.createRepresentationInAllViews(imageSource);
-    imageRepresentation = proxyManager.getRepresentation(imageSource, view,viewx,viewy,viewz);
-
+    imageRepresentation = proxyManager.getRepresentation(imageSource, view);
+    imageRepresentationX = proxyManager.getRepresentation(imageSource, viewx);
+    imageRepresentationY = proxyManager.getRepresentation(imageSource, viewy);
+    imageRepresentationZ = proxyManager.getRepresentation(imageSource, viewz);
     dataArray = image.getPointData().getScalars();
     lookupTableProxy = proxyManager.getLookupTable(dataArray.getName());
     if (dataArray.getNumberOfComponents() > 1) {
@@ -201,12 +181,25 @@ const createViewer = (
     // Slices share the same lookup table as the volume rendering.
     const lut = lookupTableProxy.getLookupTable();
     const sliceActors = imageRepresentation.getActors();
+    const sliceActorsX = imageRepresentationX.getActors();
+    const sliceActorsY = imageRepresentationY.getActors();
+    const sliceActorsZ = imageRepresentationZ.getActors();
     sliceActors.forEach((actor) => {
       actor.getProperty().setRGBTransferFunction(lut);
     });
-
+    sliceActorsX.forEach((actor) => {
+      actor.getProperty().setRGBTransferFunction(lut);
+    });
+    sliceActorsY.forEach((actor) => {
+      actor.getProperty().setRGBTransferFunction(lut);
+    });
+    sliceActorsZ.forEach((actor) => {
+      actor.getProperty().setRGBTransferFunction(lut);
+    });
     if (use2D) {
-      // view.setViewMode('ZPlane');
+      viewx.setOrientationAxesVisibility(false);
+      viewy.setOrientationAxesVisibility(false);
+      viewz.setOrientationAxesVisibility(false);
       view.setOrientationAxesVisibility(false);
     } else {
       view.setViewMode('VolumeRendering');
@@ -242,6 +235,9 @@ const createViewer = (
     use2D,
     imageSource,
     imageRepresentation,
+    imageRepresentationX,
+    imageRepresentationY,
+    imageRepresentationZ,
     view,
     viewx,
     viewy,
@@ -263,10 +259,7 @@ const createViewer = (
       isBackgroundDark,
       use2D,
     );
-      console.log("view",view);
-      console.log("viewx",viewx);
-      console.log("viewy",viewy);
-      console.log("viewz",viewz);
+    
       const annotationContainer = container.querySelector('.js-se');
       annotationContainer.style.fontFamily = 'monospace';
 
@@ -280,8 +273,17 @@ const createViewer = (
       annotationContainerZ.style.fontFamily = 'monospace';
 
       const cropFilter = imageRepresentation.getCropFilter();
-      setupControlPanel(image, cropFilter,view.getRenderWindow(),viewx.getRenderWindow(),viewy.getRenderWindow(),viewz.getRenderWindow());
+      const cropFilterX = imageRepresentationX.getCropFilter();
+      const cropFilterY = imageRepresentationY.getCropFilter();
+      const cropFilterZ = imageRepresentationZ.getCropFilter();
+      setupControlPanel(image, cropFilter,view.getRenderWindow());
+      setupControlPanel(image, cropFilterX,viewx.getRenderWindow());
+      setupControlPanel(image, cropFilterY,viewy.getRenderWindow());
+      setupControlPanel(image, cropFilterZ,viewz.getRenderWindow());
       cropFilter.reset(); 
+      cropFilterX.reset(); 
+      cropFilterY.reset(); 
+      cropFilterZ.reset(); 
     }
     view.resize(); 
     viewx.resize();

@@ -4,7 +4,7 @@ import vtkImageCroppingRegionsWidget from 'vtk.js/Sources/Interaction/Widgets/Im
 import getContrastSensitiveStyle from './getContrastSensitiveStyle';
 
 import style from './ItkVtkViewer.module.css';
-var container = document.querySelector('.display');
+
 function createMainUI(
 
   viewerDOMId,
@@ -38,18 +38,17 @@ function createMainUI(
 
   function setViewModeXPlane() {
     view.setViewMode('XPlane');
-    viewx.setViewMode('XPlane');
+    
   }
   function setViewModeYPlane() {
     view.setViewMode('YPlane');
-    viewy.setViewMode('YPlane');
+
   }
   function setViewModeZPlane() {
     view.setViewMode('ZPlane');
-    viewz.setViewMode('ZPlane');}
+  }
   function setViewModeVolumeRendering() {
-    view.setViewMode('VolumeRendering');
-   
+    view.setViewMode('VolumeRendering'); 
   }
   if (!use2D) {
     const xPlaneButton = document.createElement('div');
