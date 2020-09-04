@@ -188,6 +188,15 @@ function ItkVtkViewProxy(publicAPI, model) {
     if (model.viewMode === 'VolumeRendering') {
       model.volumeRenderingCameraState = model.camera.getState();
     }
+    if (model.viewMode === 'XPlane') {
+      model.volumeRenderingCameraState = model.camera.getState();
+    }
+    if (model.viewMode === 'YPlane') {
+      model.volumeRenderingCameraState = model.camera.getState();
+    }
+    if (model.viewMode === 'ZPlane') {
+      model.volumeRenderingCameraState = model.camera.getState();
+    }
     switch (mode) {
       case 'XPlane':
         if (model.viewMode === 'XPlane') {

@@ -197,10 +197,14 @@
     </div>
     <script type="text/javascript" src="itkVtkViewer.js"></script>
     <script>
-      var container = document.querySelector(".display");
-      var viewer = itkVtkViewer.processParameters(container, {
-        fullscreen: true
-      });
+      var container  = document.querySelector('.display');
+      var containerX = document.querySelector('.displayX');
+      var containerY = document.querySelector('.displayY');
+      var containerZ = document.querySelector('.displayZ');
+      var viewer  = itkVtkViewer.processParameters(container, { fullscreen: true });
+      var viewerX = itkVtkViewer.processParameters(containerX, { fullscreen: true });
+      var viewerY = itkVtkViewer.processParameters(containerY, { fullscreen: true });
+      var viewerZ = itkVtkViewer.processParameters(containerZ, { fullscreen: true });
       if (!viewer) {
         itkVtkViewer.createViewerFromLocalFiles(container);
       }

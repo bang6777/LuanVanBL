@@ -10,9 +10,9 @@ function preventDefaults(e) {
   e.stopPropagation();
 }
 function getRootContainer(container) {
-  const workContainer = document.querySelector('.display');
+  // const workContainer = document.querySelector('.display');
 
-  return workContainer ;
+  return container ;
 }
 function createLoadingProgress(container) {
   const rootContainer = getRootContainer(container);
@@ -86,7 +86,6 @@ export function createViewerFromLocalFiles(container) {
 export function createViewerFromUrl(el, url, use2D = false) {
   emptyContainer(el);
   const progressCallback = createLoadingProgress(el);
-
   return fetchBinaryContent(url, progressCallback).then((arrayBuffer) => {
     const file = new File(
       [new Blob([arrayBuffer])],
@@ -101,7 +100,19 @@ export function initializeEmbeddedViewers() {
     return;
   }
   const viewers = document.querySelectorAll('.display');
+  const viewersX = document.querySelectorAll('.displayX');
+  const viewersY = document.querySelectorAll('.displayY');
+  const viewersZ = document.querySelectorAll('.displayZ');
   let count = viewers.length;
+  let countX = viewersX.length;
+  let countY = viewersY.length;
+  let countZ = viewersZ.length;
+  whilesloop(count,viewers);
+  whilesloop(countX,viewersX);
+  whilesloop(countY,viewersY);
+  whilesloop(countZ,viewersZ);
+}
+function whilesloop(count,viewers){
   while (count--) {
     const el = viewers[count];
     if (!el.dataset.loaded) {
@@ -114,9 +125,9 @@ export function initializeEmbeddedViewers() {
         ? `${height}px`
         : height;
       createViewerFromUrl(el, el.dataset.url, !!el.dataset.slice).then(
-        (viewer) => {
+        (viewer,viewerX,viewerY,viewerZ) => {
           // Background color handling
-          if (el.dataset.backgroundColor && viewer.renderWindow) {
+          if (el.dataset.backgroundColor && viewer.renderWindow & viewerX.renderWindow & viewerY.renderWindow & viewerZ.renderWindow) {
             const color = el.dataset.backgroundColor;
             const bgColor = [
               color.slice(0, 2),
@@ -124,18 +135,29 @@ export function initializeEmbeddedViewers() {
               color.slice(4, 6),
             ].map((v) => parseInt(v, 16) / 255);
             viewer.renderer.setBackground(bgColor);
+            viewerX.renderer.setBackground(bgColor);
+            viewerY.renderer.setBackground(bgColor);
+            viewerZ.renderer.setBackground(bgColor);
           }
 
-          // Render
-          if (viewer.renderWindow && viewer.renderWindow.render) {
+            // Render
+            if (viewer.renderWindow && viewer.renderWindow.render) {
             viewer.renderWindow.render();
-          }
+            }
+            if (viewerX.renderWindow && viewerX.renderWindow.render) {
+            viewerX.renderWindow.render();
+            }
+            if (viewerY.renderWindow && viewerY.renderWindow.render) {
+            viewerY.renderWindow.render();
+            }
+            if (viewerZ.renderWindow && viewerZ.renderWindow.render) {
+            viewerZ.renderWindow.render();
+            }
         }
       );
     }
   }
 }
-
 export function processParameters(
   container,
   addOnParameters = {},
