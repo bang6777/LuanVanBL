@@ -8,8 +8,8 @@ import os
 import cv2
 import matplotlib
 import cnn
-base = "./TRAUMA/"
-pass_dicom = "trauma0005.dcm"
+base = "./AGECANONIX/Specials 1CoronaryCTA_with_spiral _CTA_pre/CorCTA w-o  3.0  B20f - 4/"
+pass_dicom = "IM-0001-0012.dcm"
 filename= pydicom.data.data_manager.get_files(base,pass_dicom)[0]
 
 ds = pydicom.dcmread(filename)
