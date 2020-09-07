@@ -1,8 +1,8 @@
-import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
-import vtkPiecewiseGaussianWidget from 'vtk.js/Sources/Interaction/Widgets/PiecewiseGaussianWidget';
-import vtkMouseRangeManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseRangeManipulator';
-import getContrastSensitiveStyle from './getContrastSensitiveStyle';
-import style from './ItkVtkViewer.module.css';
+import vtkColorMaps from "vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps";
+import vtkPiecewiseGaussianWidget from "vtk.js/Sources/Interaction/Widgets/PiecewiseGaussianWidget";
+import vtkMouseRangeManipulator from "vtk.js/Sources/Interaction/Manipulators/MouseRangeManipulator";
+import getContrastSensitiveStyle from "./getContrastSensitiveStyle";
+import style from "./ItkVtkViewer.module.css";
 function createTransferFunctionWidget(
   uiContainertb,
   viewerDOMId,
@@ -24,41 +24,41 @@ function createTransferFunctionWidget(
 
   const transferFunctionWidget = vtkPiecewiseGaussianWidget.newInstance({
     numberOfBins: 256,
-    size: [400, 150],
+    size: [400, 150]
   });
   let iconSize = 20;
   if (use2D) {
     iconSize = 0;
   }
   transferFunctionWidget.updateStyle({
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    histogramColor: 'rgba(30, 30, 30, 0.6)',
-    strokeColor: 'rgb(0, 0, 0)',
-    activeColor: 'rgb(255, 255, 255)',
-    handleColor: 'rgb(50, 50, 150)',
-    buttonDisableFillColor: 'rgba(255, 255, 255, 0.5)',
-    buttonDisableStrokeColor: 'rgba(0, 0, 0, 0.5)',
-    buttonStrokeColor: 'rgba(0, 0, 0, 1)',
-    buttonFillColor: 'rgba(255, 255, 255, 1)',
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    histogramColor: "rgba(30, 30, 30, 0.6)",
+    strokeColor: "rgb(0, 0, 0)",
+    activeColor: "rgb(255, 255, 255)",
+    handleColor: "rgb(50, 50, 150)",
+    buttonDisableFillColor: "rgba(255, 255, 255, 0.5)",
+    buttonDisableStrokeColor: "rgba(0, 0, 0, 0.5)",
+    buttonStrokeColor: "rgba(0, 0, 0, 1)",
+    buttonFillColor: "rgba(255, 255, 255, 1)",
     strokeWidth: 2,
     activeStrokeWidth: 3,
     buttonStrokeWidth: 1.5,
     handleWidth: 4,
     iconSize, // Can be 0 if you want to remove buttons (dblClick for (+) / rightClick for (-))
-    padding: 10,
+    padding: 10
   });
   transferFunctionWidget.setDataArray(dataArray.getData());
 
   const lookupTable = lookupTableProxy.getLookupTable();
 
-  const piecewiseWidgetContainer = document.createElement('div');
-  piecewiseWidgetContainer.setAttribute('class', style.piecewiseWidget);
+  const piecewiseWidgetContainer = document.createElement("div");
+  piecewiseWidgetContainer.setAttribute("class", style.piecewiseWidget);
 
   transferFunctionWidget.setContainer(piecewiseWidgetContainer);
   transferFunctionWidget.bindMouseListeners();
 
   // Manage update when opacity changes
-  transferFunctionWidget.onAnimation((start) => {
+  transferFunctionWidget.onAnimation(start => {
     if (start) {
       renderWindow.getInteractor().requestAnimation(transferFunctionWidget);
       renderWindowx.getInteractor().requestAnimation(transferFunctionWidget);
@@ -88,11 +88,11 @@ function createTransferFunctionWidget(
     lookupTable.updateRange();
 
     if (!renderWindow.getInteractor().isAnimating()) {
-        renderWindow.render();
+      renderWindow.render();
 
-        renderWindowx.render();
-        renderWindowy.render();
-        renderWindowz.render();
+      renderWindowx.render();
+      renderWindowy.render();
+      renderWindowz.render();
     }
   });
 
@@ -100,10 +100,10 @@ function createTransferFunctionWidget(
   lookupTable.onModified(() => {
     transferFunctionWidget.render();
     if (!renderWindow.getInteractor().isAnimating()) {
-        renderWindow.render();
-        renderWindowx.render();
-        renderWindowy.render();
-        renderWindowz.render();
+      renderWindow.render();
+      renderWindowx.render();
+      renderWindowy.render();
+      renderWindowz.render();
     }
   });
 
@@ -119,8 +119,8 @@ function createTransferFunctionWidget(
   transferFunctionWidget.applyOpacity(piecewiseFunction);
   transferFunctionWidget.render();
 
-  const transferFunctionWidgetRow = document.createElement('div');
-  transferFunctionWidgetRow.setAttribute('class', style.uiRow);
+  const transferFunctionWidgetRow = document.createElement("div");
+  transferFunctionWidgetRow.setAttribute("class", style.uiRow);
   transferFunctionWidgetRow.className += ` ${viewerDOMId}-toggle`;
   transferFunctionWidgetRow.appendChild(piecewiseWidgetContainer);
   uiContainer.appendChild(transferFunctionWidgetRow);
@@ -128,7 +128,7 @@ function createTransferFunctionWidget(
   // Create range manipulator
   const rangeManipulator = vtkMouseRangeManipulator.newInstance({
     button: 1,
-    alt: true,
+    alt: true
   });
 
   // Window
@@ -137,7 +137,7 @@ function createTransferFunctionWidget(
     const gaussian = transferFunctionWidget.getGaussians()[0];
     return gaussian.width * windowMotionScale;
   };
-  const windowSet = (value) => {
+  const windowSet = value => {
     const gaussians = transferFunctionWidget.getGaussians();
     const newGaussians = gaussians.slice();
     newGaussians[0].width = value / windowMotionScale;
@@ -157,7 +157,7 @@ function createTransferFunctionWidget(
     const gaussian = transferFunctionWidget.getGaussians()[0];
     return gaussian.position * levelMotionScale;
   };
-  const levelSet = (value) => {
+  const levelSet = value => {
     const gaussians = transferFunctionWidget.getGaussians();
     const newGaussians = gaussians.slice();
     newGaussians[0].position = value / levelMotionScale;
@@ -183,12 +183,12 @@ function createTransferFunctionWidget(
 
   const opacityRangeManipulator = vtkMouseRangeManipulator.newInstance({
     button: 3, // Right mouse
-    alt: true,
+    alt: true
   });
   const opacityRangeManipulatorShift = vtkMouseRangeManipulator.newInstance({
     button: 1, // Left mouse
     shift: true, // For the macOS folks
-    alt: true,
+    alt: true
   });
 
   // Opacity
@@ -197,7 +197,7 @@ function createTransferFunctionWidget(
     const gaussian = transferFunctionWidget.getGaussians()[0];
     return gaussian.height * opacityMotionScale;
   };
-  const opacitySet = (value) => {
+  const opacitySet = value => {
     const gaussians = transferFunctionWidget.getGaussians();
     const newGaussians = gaussians.slice();
     newGaussians[0].height = value / opacityMotionScale;
@@ -220,14 +220,19 @@ function createTransferFunctionWidget(
   view.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
   view.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
   viewx.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
-  viewx.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
+  viewx
+    .getInteractorStyle3D()
+    .addMouseManipulator(opacityRangeManipulatorShift);
   viewy.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
-  viewy.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
+  viewy
+    .getInteractorStyle3D()
+    .addMouseManipulator(opacityRangeManipulatorShift);
   viewz.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulator);
-  viewz.getInteractorStyle3D().addMouseManipulator(opacityRangeManipulatorShift);
+  viewz
+    .getInteractorStyle3D()
+    .addMouseManipulator(opacityRangeManipulatorShift);
   return transferFunctionWidget;
 }
-
 
 function createColorPresetSelector(
   uiContainer,
@@ -241,93 +246,93 @@ function createColorPresetSelector(
   //const presetNames = vtkColorMaps.rgbPresetNames;
   // More selective
   const presetNames = [
-    '2hot',
-    'Asymmtrical Earth Tones (6_21b)',
-    'Black, Blue and White',
-    'Black, Orange and White',
-    'Black-Body Radiation',
-    'Blue to Red Rainbow',
-    'Blue to Yellow',
-    'Blues',
-    'BrBG',
-    'BrOrYl',
-    'BuGn',
-    'BuGnYl',
-    'BuPu',
-    'BuRd',
-    'CIELab Blue to Red',
-    'Cold and Hot',
-    'Cool to Warm',
-    'Cool to Warm (Extended)',
-    'GBBr',
-    'GYPi',
-    'GnBu',
-    'GnBuPu',
-    'GnRP',
-    'GnYlRd',
-    'Grayscale',
-    'Green-Blue Asymmetric Divergent (62Blbc)',
-    'Greens',
-    'GyRd',
-    'Haze',
-    'Haze_cyan',
-    'Haze_green',
-    'Haze_lime',
-    'Inferno (matplotlib)',
-    'Linear Blue (8_31f)',
-    'Linear YGB 1211g',
-    'Magma (matplotlib)',
-    'Muted Blue-Green',
-    'OrPu',
-    'Oranges',
-    'PRGn',
-    'PiYG',
-    'Plasma (matplotlib)',
-    'PuBu',
-    'PuOr',
-    'PuRd',
-    'Purples',
-    'Rainbow Blended Black',
-    'Rainbow Blended Grey',
-    'Rainbow Blended White',
-    'Rainbow Desaturated',
-    'RdOr',
-    'RdOrYl',
-    'RdPu',
-    'Red to Blue Rainbow',
-    'Reds',
-    'Spectral_lowBlue',
-    'Viridis (matplotlib)',
-    'Warm to Cool',
-    'Warm to Cool (Extended)',
-    'X Ray',
-    'Yellow 15',
-    'blot',
-    'blue2cyan',
-    'blue2yellow',
-    'bone_Matlab',
-    'coolwarm',
-    'copper_Matlab',
-    'gist_earth',
-    'gray_Matlab',
-    'heated_object',
-    'hsv',
-    'hue_L60',
-    'jet',
-    'magenta',
-    'nic_CubicL',
-    'nic_CubicYF',
-    'nic_Edge',
-    'pink_Matlab',
-    'rainbow',
+    "2hot",
+    "Asymmtrical Earth Tones (6_21b)",
+    "Black, Blue and White",
+    "Black, Orange and White",
+    "Black-Body Radiation",
+    "Blue to Red Rainbow",
+    "Blue to Yellow",
+    "Blues",
+    "BrBG",
+    "BrOrYl",
+    "BuGn",
+    "BuGnYl",
+    "BuPu",
+    "BuRd",
+    "CIELab Blue to Red",
+    "Cold and Hot",
+    "Cool to Warm",
+    "Cool to Warm (Extended)",
+    "GBBr",
+    "GYPi",
+    "GnBu",
+    "GnBuPu",
+    "GnRP",
+    "GnYlRd",
+    "Grayscale",
+    "Green-Blue Asymmetric Divergent (62Blbc)",
+    "Greens",
+    "GyRd",
+    "Haze",
+    "Haze_cyan",
+    "Haze_green",
+    "Haze_lime",
+    "Inferno (matplotlib)",
+    "Linear Blue (8_31f)",
+    "Linear YGB 1211g",
+    "Magma (matplotlib)",
+    "Muted Blue-Green",
+    "OrPu",
+    "Oranges",
+    "PRGn",
+    "PiYG",
+    "Plasma (matplotlib)",
+    "PuBu",
+    "PuOr",
+    "PuRd",
+    "Purples",
+    "Rainbow Blended Black",
+    "Rainbow Blended Grey",
+    "Rainbow Blended White",
+    "Rainbow Desaturated",
+    "RdOr",
+    "RdOrYl",
+    "RdPu",
+    "Red to Blue Rainbow",
+    "Reds",
+    "Spectral_lowBlue",
+    "Viridis (matplotlib)",
+    "Warm to Cool",
+    "Warm to Cool (Extended)",
+    "X Ray",
+    "Yellow 15",
+    "blot",
+    "blue2cyan",
+    "blue2yellow",
+    "bone_Matlab",
+    "coolwarm",
+    "copper_Matlab",
+    "gist_earth",
+    "gray_Matlab",
+    "heated_object",
+    "hsv",
+    "hue_L60",
+    "jet",
+    "magenta",
+    "nic_CubicL",
+    "nic_CubicYF",
+    "nic_Edge",
+    "pink_Matlab",
+    "rainbow"
   ];
 
-  const presetSelector = document.createElement('select');
-  presetSelector.setAttribute('class', style.selector);
+  const presetSelector = document.createElement("select");
+  presetSelector.setAttribute("class", style.selector);
   presetSelector.id = `${viewerDOMId}-colorMapSelector`;
   presetSelector.innerHTML = presetNames
-    .map((name) => `<option value="${name}">${name}</option>`)
-    .join('');
+    .map(name => `<option value="${name}">${name}</option>`)
+    .join("");
 
   function updateColorMap(event) {
     lookupTableProxy.setPresetName(presetSelector.value);
@@ -336,14 +341,12 @@ function createColorPresetSelector(
     renderWindowy.render();
     renderWindowz.render();
   }
-  presetSelector.addEventListener('change', updateColorMap);
+  presetSelector.addEventListener("change", updateColorMap);
   uiContainer.appendChild(presetSelector);
   presetSelector.value = lookupTableProxy.getPresetName();
 
   return updateColorMap;
 }
-
-
 
 function createGradientOpacitySlider(
   uiContainer,
@@ -356,12 +359,12 @@ function createGradientOpacitySlider(
   renderWindowz
 ) {
   const contrastSensitiveStyle = getContrastSensitiveStyle(
-    ['invertibleButton'],
+    ["invertibleButton"],
     isBackgroundDark
   );
 
-  const sliderEntry = document.createElement('div');
-  sliderEntry.setAttribute('class', style.sliderEntry);
+  const sliderEntry = document.createElement("div");
+  sliderEntry.setAttribute("class", style.sliderEntry);
   sliderEntry.innerHTML = `
     <div itk-vtk-tooltip itk-vtk-tooltip-top itk-vtk-tooltip-content="Gradient opacity" class="${
       contrastSensitiveStyle.invertibleButton
@@ -381,7 +384,7 @@ function createGradientOpacitySlider(
     renderWindowy.render();
     renderWindowz.render();
   }
-  edgeElement.addEventListener('input', updateGradientOpacity);
+  edgeElement.addEventListener("input", updateGradientOpacity);
   updateGradientOpacity();
   uiContainer.appendChild(sliderEntry);
 
@@ -406,13 +409,13 @@ function createImageUI(
   const renderWindowx = viewx.getRenderWindow();
   const renderWindowy = viewy.getRenderWindow();
   const renderWindowz = viewz.getRenderWindow();
-  const imageUIGroup = document.createElement('div');
-  imageUIGroup.setAttribute('class', style.uiGroup);
+  const imageUIGroup = document.createElement("div");
+  imageUIGroup.setAttribute("class", style.uiGroup);
 
   let updateColorMap = null;
   if (dataArray.getNumberOfComponents() === 1) {
-    const presetRow = document.createElement('div');
-    presetRow.setAttribute('class', style.uiRow);
+    const presetRow = document.createElement("div");
+    presetRow.setAttribute("class", style.uiRow);
     updateColorMap = createColorPresetSelector(
       presetRow,
       viewerDOMId,
@@ -445,8 +448,8 @@ function createImageUI(
 
   let updateGradientOpacity = null;
   if (!use2D) {
-    const volumeRenderingRow = document.createElement('div');
-    volumeRenderingRow.setAttribute('class', style.uiRow);
+    const volumeRenderingRow = document.createElement("div");
+    volumeRenderingRow.setAttribute("class", style.uiRow);
     volumeRenderingRow.className += ` ${viewerDOMId}-volumeRendering ${viewerDOMId}-toggle`;
     volumeRenderingRow.className += ` ${viewerDOMId}-XPlane ${viewerDOMId}-toggle`;
     volumeRenderingRow.className += ` ${viewerDOMId}-YPlane ${viewerDOMId}-toggle`;
