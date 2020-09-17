@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pydicom
 from pydicom.data import get_testdata_files
 from skimage.transform import resize
-from pydicom.pixel_data_handlers.util import apply_color_lut
+# from pydicom.pixel_data_handlers.util import apply_color_lut
 import numpy
 import pydicom
 import os
