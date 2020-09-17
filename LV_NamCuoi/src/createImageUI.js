@@ -21,7 +21,7 @@ function createTransferFunctionWidget(
 ) {
   const uiContainer = document.querySelector(".table");
   const piecewiseFunction = piecewiseFunctionProxy.getPiecewiseFunction();
-
+  
   const transferFunctionWidget = vtkPiecewiseGaussianWidget.newInstance({
     numberOfBins: 256,
     size: [400, 150],
