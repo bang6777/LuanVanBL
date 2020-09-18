@@ -3,6 +3,8 @@ import vtkPiecewiseGaussianWidget from "vtk.js/Sources/Interaction/Widgets/Piece
 import vtkMouseRangeManipulator from "vtk.js/Sources/Interaction/Manipulators/MouseRangeManipulator";
 import getContrastSensitiveStyle from "./getContrastSensitiveStyle";
 import style from "./ItkVtkViewer.module.css";
+// import createDistanceButton from "./Image/createDistanceButton";
+
 function createTransferFunctionWidget(
   uiContainertb,
   viewerDOMId,
@@ -56,6 +58,14 @@ function createTransferFunctionWidget(
 
   transferFunctionWidget.setContainer(piecewiseWidgetContainer);
   transferFunctionWidget.bindMouseListeners();
+
+  // Put distance tools in their own row
+  // const distanceRulerRow = document.createElement("div");
+  // distanceRulerRow.setAttribute("class", style.uiRow);
+  // distanceRulerRow.className += ` ${viewerDOMId}-distanceRuler ${viewerDOMId}-toggle`;
+  // distanceRulerRow.style.display = use2D ? "flex" : "none";
+
+  // createDistanceButton(store, distanceRulerRow);
 
   // Manage update when opacity changes
   transferFunctionWidget.onAnimation(start => {
