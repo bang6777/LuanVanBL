@@ -1,31 +1,24 @@
-# plot dog photos from the dogs vs cats dataset
-from matplotlib import pyplot
-from matplotlib.image import imread
 from numpy import asarray
+from numpy import save
 import numpy as np
-from keras.preprocessing.image import load_img
-from keras.preprocessing.image import img_to_array
 from tensorflow import keras
 from keras.models import Sequential
-from keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout,Activation
-
+from keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout
+from keras.layers import Activation
+from tensorflow.keras import layers
 from keras.utils import to_categorical
-
+import pydicom 
 import os
-from keras.models import Model
-from keras.optimizers import SGD
+import cv2
+import pandas as pd
 from keras import backend as K
-# define location of dataset
-folder_path = './dataset/train_set_jpg/'
-folder_path_test = './dataset/test_set_jpg/'
+
+# define and init location of dataset
+folder_path = './dataset/train_set_dcm/'
 objects = ["trauma","vhf"] 
-x_train,y_train,x_test,y_test =list(), list(),list(), list()
+x_train,y_train =list(), list()
 images_path = os.listdir(folder_path)
-img_width, img_height = 512, 512
-if K.image_data_format() == 'channels_first':
-    input_shape = (3, img_width, img_height)
-else:
-    input_shape = (img_width, img_height, 3)
+
 # plot first few images
 def load_folder(folder_name):
     photos, labels = list(), list()
@@ -37,23 +30,29 @@ def load_folder(folder_name):
         if images.startswith(objects[1]):
             output = 1.0
         # load image
-        photo = load_img(files)
+        photo = pydicom.dcmread(files)
         # convert to numpy array
-        arr = img_to_array(photo)
+        arr = photo.pixel_array
         # store
         photos.append(arr)
         labels.append(output)
     # convert to a numpy arrays
-    photos = asarray(photos)
-    labels = asarray(labels)
+    photos = asarray(photos).astype(np.float32)
+    labels = asarray(labels).astype(np.float32)
     return photos, labels
 
 
 x_train,y_train = load_folder(folder_path)
-print(y_train)
 
-x_test,y_test = load_folder(folder_path_test)
+img_width=x_train[0].shape[0]
+img_height=x_test[0].shape[1]
 
+x_train=x_train.reshape(x_train.shape[0],img_width,img_height,1)
+
+if K.image_data_format() == 'channels_first':
+    input_shape = (1, img_width, img_height)
+else:
+    input_shape = (img_width, img_height, 1)
 # define cnn model
 def define_model():
     #Layer1
@@ -80,14 +79,13 @@ def define_model():
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
     return model
-# run the test harness for evaluating a model
+
 model = define_model()
 model.compile(optimizer='adam',
               loss='binary_crossentropy',
               metrics=['accuracy'])
+#train model
 model.fit(x_train, y_train, epochs=10)
-
-# test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
 # save model
 model.save('classifier.h5')
 
