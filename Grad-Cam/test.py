@@ -1,51 +1,66 @@
-# MLP for Pima Indians Dataset Serialize to JSON and HDF5
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.models import model_from_json
-import numpy
+from matplotlib import pyplot
+from matplotlib.image import imread
+from numpy import asarray
+import numpy as np
+from tensorflow import keras
 import os
-# fix random seed for reproducibility
-numpy.random.seed(7)
-# load pima indians dataset
-dataset = numpy.loadtxt("pima-indians-diabetes.csv", delimiter=",")
-# split into input (X) and output (Y) variables
-X = dataset[:, 0:8]
-Y = dataset[:, 8]
-# create model
-model = Sequential()
-model.add(Dense(12, input_dim=8, activation='relu'))
-model.add(Dense(8, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
-# Compile model
-model.compile(loss='binary_crossentropy',
-              optimizer='adam', metrics=['accuracy'])
-# Fit the model
-model.fit(X, Y, epochs=150, batch_size=10, verbose=0)
-# evaluate the model
-scores = model.evaluate(X, Y, verbose=0)
-print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+from keras.models import Model
+from keras import backend as K
+import pydicom 
+from keras.models import load_model
+import numpy as np
+from keras.preprocessing import image
 
-# serialize model to JSON
-model_json = model.to_json()
-with open("model.json", "w") as json_file:
-    json_file.write(model_json)
-# serialize weights to HDF5
-model.save_weights("model.h5")
-print("Saved model to disk")
+model = load_model('classifier.h5')
+# define location of dataset
+folder_path_test = './dataset/test_set_dcm/'
+objects = ["trauma","vhf"] 
+x_test,y_test =list(), list()
+images_path = os.listdir(folder_path_test)
 
-# later...
+def load_folder(folder_name):
+    photos, labels = list(), list()
+    for n,images in enumerate(images_path):
+        # print(images)
+        files = folder_path_test + images
+        # determine class
+        output = 0.0
+        if images.startswith(objects[1]):
+            output = 1.0
+        # load image
+        photo = pydicom.dcmread(files)
+        # convert to numpy array
+        # arr = img_to_array(photo)
+        arr = photo.pixel_array
+        # arr_colorimage = apply_color_lut(arr, palette='PET')
+        # store
+        photos.append(arr)
+        labels.append(output)
+    # convert to a numpy arrays
+    photos = asarray(photos).astype(np.float32)
+    labels = asarray(labels).astype(np.float32)
+    return photos, labels
 
-# load json and create model
-json_file = open('model.json', 'r')
-loaded_model_json = json_file.read()
-json_file.close()
-loaded_model = model_from_json(loaded_model_json)
-# load weights into new model
-loaded_model.load_weights("model.h5")
-print("Loaded model from disk")
+# x_test,y_test = load_folder(folder_path_test)
+# img_width=x_test[0].shape[0]
+# img_height=x_test[0].shape[1]
 
-# evaluate loaded model on test data
-loaded_model.compile(loss='binary_crossentropy',
-                     optimizer='rmsprop', metrics=['accuracy'])
-score = loaded_model.evaluate(X, Y, verbose=0)
-print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
+# x_test=x_test.reshape(x_test.shape[0],img_width,img_height,1)
+# #test 
+# test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
+
+# print("test loss",test_loss)
+# print("test acc",test_acc)
+test_image = pydicom.dcmread('./dataset/test_set_dcm/vhf.1496.dcm')
+test_image = test_image.pixel_array
+test_image = asarray(test_image).astype(np.float32)
+test_image = test_image.reshape(1,512,512,1)
+result = model.predict(test_image)
+print("class",result)
+if result[0][0] == 0:
+    prediction = 'trauma'
+elif result[0][0] ==1:
+    prediction = 'shoulder'
+else:
+    prediction = 'error'
+print(prediction)
