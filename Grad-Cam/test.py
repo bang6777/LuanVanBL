@@ -1,16 +1,18 @@
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 from matplotlib.image import imread
 from numpy import asarray
+from keras.preprocessing.image import load_img
 import numpy as np
 from tensorflow import keras
 import os
+import cv2
 from keras.models import Model
 from keras import backend as K
 import pydicom 
 from keras.models import load_model
 import numpy as np
 from keras.preprocessing import image
-
+import tensorflow as tf
 model = load_model('classifier.h5')
 # define location of dataset
 folder_path_test = './dataset/test_set_dcm/'
@@ -51,7 +53,8 @@ def load_folder(folder_name):
 
 # print("test loss",test_loss)
 # print("test acc",test_acc)
-test_image = pydicom.dcmread('./dataset/test_set_dcm/vhf.1496.dcm')
+H, W = 512, 512
+test_image = pydicom.dcmread('./dataset/test_set_dcm/vhf.1500.dcm')
 test_image = test_image.pixel_array
 test_image = asarray(test_image).astype(np.float32)
 test_image = test_image.reshape(1,512,512,1)
@@ -61,6 +64,43 @@ if result[0][0] == 0:
     prediction = 'trauma'
 elif result[0][0] ==1:
     prediction = 'shoulder'
-else:
-    prediction = 'error'
+
 print(prediction)
+img_path= "./dataset/"
+
+def grad_cam(input_model, image, cls, layer_name):
+    """GradCAM method for visualizing input saliency."""
+    y_c = input_model.output[0, cls]
+    conv_output = input_model.get_layer(layer_name).output
+    # tf.compat.v1.disable_eager_execution()
+    with tf.Graph().as_default():
+        grads = K.gradients(y_c, conv_output)[0]
+    # Normalize if necessary
+    # grads = normalize(grads)
+    
+    gradient_function = K.function([input_model.input], [conv_output, grads])
+
+    output, grads_val = gradient_function([image])
+    output, grads_val = output[0, :], grads_val[:, :]
+
+    weights = np.mean(grads_val, axis=(0, 1))
+    cam = np.dot(output, weights)
+
+    # Process CAM
+    cam = cv2.resize(cam, (W, H), cv2.INTER_LINEAR)
+    cam = np.maximum(cam, 0)
+    cam_max = cam.max() 
+    if cam_max != 0: 
+        cam = cam / cam_max
+    return cam
+print(model.get_layer(index = -1).name)
+cls = -1
+preprocessed_input = test_image
+layer_name = "activation_4"
+gradcam = grad_cam(model, preprocessed_input, cls, layer_name)
+jetcam = cv2.applyColorMap(np.uint8(255 * gradcam), cv2.COLORMAP_JET)
+test_image = test_image.reshape(512,512,1)
+jetcam = (np.float32(jetcam) + test_image) / 2
+cv2.imwrite('gradcam.jpg', np.uint8(jetcam))
+plt.imshow(np.uint8(jetcam),cmap='jet', alpha=0.5)
+plt.show()

@@ -45,7 +45,7 @@ def load_folder(folder_name):
 x_train,y_train = load_folder(folder_path)
 
 img_width=x_train[0].shape[0]
-img_height=x_test[0].shape[1]
+img_height=x_train[0].shape[1]
 
 x_train=x_train.reshape(x_train.shape[0],img_width,img_height,1)
 
