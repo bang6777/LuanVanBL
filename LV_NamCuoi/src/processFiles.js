@@ -5,6 +5,7 @@ import runPipelineBrowser from "itk/runPipelineBrowser";
 import IOTypes from "itk/IOTypes";
 import getFileExtension from "itk/getFileExtension";
 import extensionToMeshIO from "itk/extensionToMeshIO";
+import extensionToPolyDataIO from "itk/extensionToPolyDataIO";
 import vtk from "vtk.js/Sources/vtk";
 import PromiseFileReader from "promise-file-reader";
 import vtkXMLImageDataReader from "vtk.js/Sources/IO/XML/XMLImageDataReader";
@@ -67,7 +68,7 @@ const processFiles = (container, { files, use2D }) => {
         const imageData = vtkITKHelper.convertItkToVtkImage(itkImage);
         const is3D = itkImage.imageType.dimension === 3 && !use2D;
         resolve(
-          createViewer(container,containerX,containerY,containerZ, {
+          createViewer(container, containerX, containerY, containerZ, {
             image: imageData,
             use2D: !is3D
           })
@@ -175,7 +176,7 @@ const processFiles = (container, { files, use2D }) => {
           const any3D = !dataSets.map(({ is3D }) => is3D).every(is3D => !is3D);
           const is3D = any3D && !use2D;
           resolve(
-            createViewer(container,containerX,containerY,containerZ, {
+            createViewer(container, containerX, containerY, containerZ, {
               image,
               geometries,
               use2D: !is3D
