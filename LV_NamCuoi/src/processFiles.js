@@ -5,7 +5,6 @@ import runPipelineBrowser from "itk/runPipelineBrowser";
 import IOTypes from "itk/IOTypes";
 import getFileExtension from "itk/getFileExtension";
 import extensionToMeshIO from "itk/extensionToMeshIO";
-import extensionToPolyDataIO from "itk/extensionToPolyDataIO";
 import vtk from "vtk.js/Sources/vtk";
 import PromiseFileReader from "promise-file-reader";
 import vtkXMLImageDataReader from "vtk.js/Sources/IO/XML/XMLImageDataReader";
