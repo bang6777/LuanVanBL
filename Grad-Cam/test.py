@@ -6,6 +6,7 @@ import numpy as np
 from tensorflow import keras
 import os
 import cv2
+from PIL import Image
 from keras.models import Model
 from keras import backend as K
 import pydicom 
@@ -54,23 +55,24 @@ def load_folder(folder_name):
 # print("test loss",test_loss)
 # print("test acc",test_acc)
 H, W = 512, 512
-test_image = pydicom.dcmread('./dataset/test_set_dcm/vhf.1500.dcm')
-test_image = test_image.pixel_array
+image = pydicom.dcmread('./dataset/test_set_dcm/vhf.1359.dcm')
+test_image = image.pixel_array
 test_image = asarray(test_image).astype(np.float32)
-test_image = test_image.reshape(1,512,512,1)
-result = model.predict(test_image)
-print("class",result)
-if result[0][0] == 0:
-    prediction = 'trauma'
-elif result[0][0] ==1:
-    prediction = 'shoulder'
+test_image = test_image.reshape(1,H,W,1)
+# result = model.predict(test_image)
+# print("class",result)
+# if result[0][0] == 0:
+#     prediction = 'trauma'
+# elif result[0][0] ==1:
+#     prediction = 'shoulder'
 
-print(prediction)
-img_path= "./dataset/"
+# print(prediction)
+# img_path= "./dataset/"
 
 def grad_cam(input_model, image, cls, layer_name):
     """GradCAM method for visualizing input saliency."""
     y_c = input_model.output[0, cls]
+    print(y_c)
     conv_output = input_model.get_layer(layer_name).output
     # tf.compat.v1.disable_eager_execution()
     with tf.Graph().as_default():
@@ -89,18 +91,38 @@ def grad_cam(input_model, image, cls, layer_name):
     # Process CAM
     cam = cv2.resize(cam, (W, H), cv2.INTER_LINEAR)
     cam = np.maximum(cam, 0)
+    print(cam)
+    heatmap = cam / np.max(cam)
+    # print(heatmap)
     cam_max = cam.max() 
     if cam_max != 0: 
         cam = cam / cam_max
-    return cam
+    return cam,heatmap
+
+
 print(model.get_layer(index = -1).name)
 cls = -1
 preprocessed_input = test_image
 layer_name = "activation_4"
-gradcam = grad_cam(model, preprocessed_input, cls, layer_name)
-jetcam = cv2.applyColorMap(np.uint8(255 * gradcam), cv2.COLORMAP_JET)
+gradcam,heatmap = grad_cam(model, preprocessed_input, cls, layer_name)
 test_image = test_image.reshape(512,512,1)
+jetcam = cv2.applyColorMap(np.uint8(255 * gradcam), cv2.COLORMAP_JET)
+
 jetcam = (np.float32(jetcam) + test_image) / 2
-cv2.imwrite('gradcam.jpg', np.uint8(jetcam))
-plt.imshow(np.uint8(jetcam),cmap='jet', alpha=0.5)
+plt.imshow(np.uint8(jetcam))
 plt.show()
+cv2.imwrite('gradcam.jpg', np.uint8(jetcam))
+im_frame =  Image.open('gradcam.jpg')
+print(im_frame.mode)
+np_frame = np.array(im_frame.getdata(),dtype=np.uint8)
+image.Rows = im_frame.height
+image.Columns = im_frame.width
+image.PhotometricInterpretation = "RGB"
+image.SamplesPerPixel = 3
+image.BitsStored = 8
+image.BitsAllocated = 8
+image.HighBit = 7
+image.PixelRepresentation = 0
+image.PixelData = np_frame.tobytes()
+image.save_as('result.dcm')
+
