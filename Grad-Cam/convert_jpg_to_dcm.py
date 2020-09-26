@@ -8,9 +8,9 @@ import csv
 # make it True if you want in PNG format
 PNG = False
 # Specify the .dcm folder path
-folder_path = "./TRAUMA/"
+folder_path = "./dataset/train_set_dcm/"
 # Specify the .jpg/.png folder path
-jpg_folder_path = "./Images_trauma/"
+jpg_folder_path = "./dataset/train_set_jpg/"
 images_path = os.listdir(folder_path)
 for n, image in enumerate(images_path):
     ds = dicom.dcmread(os.path.join(folder_path, image))
