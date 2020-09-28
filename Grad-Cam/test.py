@@ -42,8 +42,8 @@ def load_folder(folder_name):
         photos.append(arr)
         labels.append(output)
     # convert to a numpy arrays
-    photos = asarray(photos).astype(np.float32)
-    labels = asarray(labels).astype(np.float32)
+    photos = asarray(photos).astype(np.float64)
+    labels = asarray(labels).astype(np.float64)
     return photos, labels
 
 # x_test,y_test = load_folder(folder_path_test)
@@ -58,10 +58,10 @@ def load_folder(folder_name):
 # print("test loss",test_loss)
 # print("test acc",test_acc)
 H, W = 512, 512
-image = pydicom.dcmread('./dataset/test_set_dcm/vhf.1359.dcm')
+image = pydicom.dcmread('./dataset/test_set_dcm/trauma0451.dcm')
 test_image = image.pixel_array
-test_image = asarray(test_image).astype(np.float32)
-test_image = test_image.reshape(1,H,W,1)
+test_image = asarray(test_image).astype(np.float64)
+test_image = test_image.reshape(1, H, W, 1)
 # result = model.predict(test_image)
 # print("class",result)
 # if result[0][0] == 0:
@@ -71,6 +71,7 @@ test_image = test_image.reshape(1,H,W,1)
 
 # print(prediction)
 # img_path= "./dataset/"
+
 
 def grad_cam(input_model, image, cls, layer_name):
     """GradCAM method for visualizing input saliency."""
@@ -97,27 +98,27 @@ def grad_cam(input_model, image, cls, layer_name):
     print(cam)
     heatmap = cam / np.max(cam)
     # print(heatmap)
-    cam_max = cam.max() 
-    if cam_max != 0: 
+    cam_max = cam.max()
+    if cam_max != 0:
         cam = cam / cam_max
-    return cam,heatmap
+    return cam, heatmap
 
 
-print(model.get_layer(index = -1).name)
+print(model.get_layer(index=-1).name)
 cls = -1
 preprocessed_input = test_image
 layer_name = "activation_4"
-gradcam,heatmap = grad_cam(model, preprocessed_input, cls, layer_name)
-test_image = test_image.reshape(512,512,1)
+gradcam, heatmap = grad_cam(model, preprocessed_input, cls, layer_name)
+test_image = test_image.reshape(512, 512, 1)
 jetcam = cv2.applyColorMap(np.uint8(255 * gradcam), cv2.COLORMAP_JET)
 
 jetcam = (np.float32(jetcam) + test_image) / 2
 plt.imshow(np.uint8(jetcam))
 plt.show()
 cv2.imwrite('gradcam.jpg', np.uint8(jetcam))
-im_frame =  Image.open('gradcam.jpg')
+im_frame = Image.open('gradcam.jpg')
 print(im_frame.mode)
-np_frame = np.array(im_frame.getdata(),dtype=np.uint8)
+np_frame = np.array(im_frame.getdata(), dtype=np.uint8)
 image.Rows = im_frame.height
 image.Columns = im_frame.width
 image.PhotometricInterpretation = "RGB"
@@ -127,5 +128,5 @@ image.BitsAllocated = 8
 image.HighBit = 7
 image.PixelRepresentation = 0
 image.PixelData = np_frame.tobytes()
+# image.SliceLocation = 1
 image.save_as('result.dcm')
-
