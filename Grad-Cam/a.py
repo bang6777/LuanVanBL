@@ -1,56 +1,25 @@
-import matplotlib.pyplot as plt
 import pydicom
-# from pydicom.data import get_testdata_files
+from matplotlib import pyplot as plt
+from pydicom.pixel_data_handlers.util import apply_voi_lut
 from pydicom.data import get_testdata_files
-# from pydicom.GDCM
-
-print(__doc__)
-# base = "./resliceData"
-base = "./"
-# pass_dicom = "vhf.1499.dcm"
-pass_dicom = "IM-0001-0009.dcm"
-# pass_dicom = "MR000000"
-filename = pydicom.data.data_manager.get_files(base, pass_dicom)[0]
-# filename = pydicom.data.data_manager.get_files(base, pass_dicom)[0]
+from numpy import savetxt
+import numpy as np
+image = pydicom.dcmread('./dataset/test_set_dcm/trauma0451.dcm')
 # filename = get_testdata_files('CT_small.dcm')[0]
-dataset = pydicom.dcmread(filename)
-print(dataset)
-# Normal mode:
-print()
-print("Filename.........:", filename)
-print("Storage type.....:", dataset.SOPClassUID)
-print()
+# image = pydicom.dcmread(filename)
+test_image = image.pixel_array
+img_2d = test_image.astype(float)
 
-pat_name = dataset.PatientName
-display_name = pat_name.family_name + ", " + pat_name.given_name
-print("Patient's name...:", display_name)
-print("Patient id.......:", dataset.PatientID)
-print("Modality.........:", dataset.Modality)
-print("Study Date.......:", dataset.StudyDate)
+# Step 2. Rescaling grey scale between 0-255
+img_2d_scaled = (np.maximum(img_2d, 0) / img_2d.max()) * 255.0
 
-if 'PixelData' in dataset:
-    rows = int(dataset.Rows)
-    cols = int(dataset.Columns)
-    print("Image size.......: {rows:d} x {cols:d}, {size:d} bytes".format(
-        rows=rows, cols=cols, size=len(dataset.PixelData)))
-    if 'PixelSpacing' in dataset:
-        print("Pixel spacing....:", dataset.PixelSpacing)
-
-# use .get() if not sure the item exists, and want a default value if missing
-print("Slice location...:", dataset.get('SliceLocation', "(missing)"))
-
-# plot the image using matplotlib
-plt.imshow(dataset.pixel_array, cmap=plt.cm.bone)
-dataset.pixel_array
+# Step 3. Convert to uint
+img_2d_scaled = np.uint8(img_2d_scaled)
+# print(img_2d_scaled)
+print(img_2d_scaled.dtype)
+print(img_2d_scaled.shape)
+print(img_2d_scaled)
+# out = apply_voi_lut(test_image, image, index=0)
+savetxt('data.csv', img_2d_scaled, delimiter=',')
+plt.imshow(img_2d_scaled, cmap='gray', vmin=0, vmax=255)
 plt.show()
-
-# import pydicom
-# from pydicom.dataset import Dataset
-# filename = get_testdata_files("CT_small.dcm")
-# ds = pydicom.dcmread(filename)
-# ds.to_json()
-# filename = pydicom.data.get_testdata_files("CT_small.dcm")
-# ds = pydicom.dcmread(filename)
-# ds_json = ds.to_json()
-# ds1 = pydicom.dataset.Dataset.from_json(ds_json)
-# assert ds == ds1
