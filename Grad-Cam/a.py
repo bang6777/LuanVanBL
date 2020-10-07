@@ -1,32 +1,39 @@
+# authors : Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# license : MIT
+
+import matplotlib.pyplot as plt
 import pydicom
-from matplotlib import pyplot as plt
-from pydicom.pixel_data_handlers.util import apply_voi_lut
 from pydicom.data import get_testdata_files
-from numpy import savetxt
-import numpy as np
-image = pydicom.dcmread('./dataset/test_set_dcm/vhf.1446.dcm')
-# filename = get_testdata_files('CT_small.dcm')[0]
-# image = pydicom.dcmread(filename)
-test_image = image.pixel_array
-print(test_image.shape)
-img_2d = test_image.astype(float)
 
-# Step 2. Rescaling grey scale between 0-255
-img_2d_scaled = (np.maximum(img_2d, 0) / img_2d.max()) * 255.0
+print(__doc__)
 
-# Step 3. Convert to uint
-img_2d_scaled = np.uint8(img_2d_scaled)
-# print(img_2d_scaled)
-print(img_2d_scaled.dtype)
-print(img_2d_scaled.shape)
-print(img_2d_scaled)
-# out = apply_voi_lut(test_image, image, index=0)
-pixel_data = list()
-for x in range(0, img_2d_scaled.shape[0]):
-    for y in range(0, img_2d_scaled.shape[1]):
-        if(img_2d_scaled[x][y] < 120):
-            img_2d_scaled[x][y] = 0
-        # print("hello",img_2d_scaled[x][y])
-savetxt('data.csv', img_2d_scaled, delimiter=',')
-plt.imshow(img_2d_scaled, cmap='gray')
+# filename = get_testdata_files('result.dcm')[0]
+dataset = pydicom.dcmread('./dataset/test_set_dcm/vhf.1261.dcm')
+print(dataset.pixel_array)
+# Normal mode:
+print()
+# print("Filename.........:", filename)
+print("Storage type.....:", dataset.SOPClassUID)
+print()
+
+pat_name = dataset.PatientName
+display_name = pat_name.family_name + ", " + pat_name.given_name
+print("Patient's name...:", display_name)
+print("Patient id.......:", dataset.PatientID)
+print("Modality.........:", dataset.Modality)
+print("Study Date.......:", dataset.StudyDate)
+print("Study Date.......:", dataset)
+if 'PixelData' in dataset:
+    rows = int(dataset.Rows)
+    cols = int(dataset.Columns)
+    print("Image size.......: {rows:d} x {cols:d}, {size:d} bytes".format(
+        rows=rows, cols=cols, size=len(dataset.PixelData)))
+    if 'PixelSpacing' in dataset:
+        print("Pixel spacing....:", dataset.PixelSpacing)
+
+# use .get() if not sure the item exists, and want a default value if missing
+print("Slice location...:", dataset.get('SliceLocation', "(missing)"))
+
+# plot the image using matplotlib
+plt.imshow(dataset.pixel_array, cmap=plt.cm.bone)
 plt.show()

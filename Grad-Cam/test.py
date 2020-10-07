@@ -18,56 +18,38 @@ import tensorflow as tf
 model = tf.keras.models.load_model('classifier.h5')
 # define location of dataset
 folder_path_test = './dataset/test_set_dcm/'
-objects = ["trauma", "vhf"]
-x_test, y_test = list(), list()
-images_path = os.listdir(folder_path_test)
-
-
+objects = ["trauma","vhf"] 
+data=list()
+path_output_dcm = "./Output_dcm/"
+path_output_jpg = "./Output_jpg/"
+img_width, img_height= 512,512
+os.mkdir(path_output_dcm)
+os.mkdir(path_output_jpg)
+os.mkdir(os.path.join(path_output_dcm,"trauma/"))
+os.mkdir(os.path.join(path_output_dcm,"shoulder/"))
 def load_folder(folder_name):
-    photos, labels = list(), list()
-    for n, images in enumerate(images_path):
-        # print(images)
-        files = folder_path_test + images
-        # determine class
-        output = 0.0
-        if images.startswith(objects[1]):
-            output = 1.0
-        # load image
+    photos = list()
+    images_path = os.listdir(folder_name)
+    for n,images in enumerate(images_path):
+        files = folder_name + images
+        print(files)
         photo = pydicom.dcmread(files)
-        # convert to numpy array
-        # arr = img_to_array(photo)
-        arr = photo.pixel_array
-        # arr_colorimage = apply_color_lut(arr, palette='PET')
-        # store
-        photos.append(arr)
-        labels.append(output)
-    # convert to a numpy arrays
-    photos = asarray(photos).astype(np.float64)
-    labels = asarray(labels).astype(np.float64)
-    return photos, labels
-
-# x_test,y_test = load_folder(folder_path_test)
-# img_width=x_test[0].shape[0]
-# img_height=x_test[0].shape[1]
-
-# x_test=x_test.reshape(x_test.shape[0],img_width,img_height,1)
-# #test
-# test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
-
-
-# print("test loss",test_loss)
-# print("test acc",test_acc)
-H, W = 512, 512
-image = pydicom.dcmread('./dataset/test_set_dcm/trauma0451.dcm')
-test_image = image.pixel_array
-test_image = asarray(test_image).astype(np.float64)
-test_image = test_image.reshape(1, H, W, 1)
-# result = model.predict(test_image)
-# print("class",result)
-# if result[0][0] == 0:
-#     prediction = 'trauma'
-# elif result[0][0] ==1:
-#     prediction = 'shoulder'
+        data = photo.pixel_array
+        # convert to a numpy arrays
+        data = asarray(data).astype(np.float32)
+        data=data.reshape(1,img_width,img_height,1)
+        result = model.predict(data)
+        src_fname_jpg = "images"+str(n)
+        path_image_jpg = os.path.join(path_output_jpg, os.path.basename(src_fname_jpg)+'.jpg')
+        save_images_jpg(data,path_image_jpg)
+        if result[0][0] == 0:
+            src_fname = 'trauma'+str(n)
+            path_image_dcm = os.path.join(path_output_dcm +"trauma/", os.path.basename(src_fname)+'.dcm')
+            save_image_dcm(photo,path_image_jpg,path_image_dcm )
+        elif result[0][0] == 1:
+            src_fname = 'shoulder'+str(n)
+            path_image_dcm = os.path.join(path_output_dcm +"shoulder/",os.path.basename(src_fname)+'.dcm')
+            save_image_dcm(photo,path_image_jpg,path_image_dcm )
 
 # print(prediction)
 # img_path= "./dataset/"
@@ -76,7 +58,7 @@ test_image = test_image.reshape(1, H, W, 1)
 def grad_cam(input_model, image, cls, layer_name):
     """GradCAM method for visualizing input saliency."""
     y_c = input_model.output[0, cls]
-    print(y_c)
+
     conv_output = input_model.get_layer(layer_name).output
     # tf.compat.v1.disable_eager_execution()
     with tf.Graph().as_default():
@@ -93,9 +75,9 @@ def grad_cam(input_model, image, cls, layer_name):
     cam = np.dot(output, weights)
 
     # Process CAM
-    cam = cv2.resize(cam, (W, H), cv2.INTER_LINEAR)
+    cam = cv2.resize(cam, (img_width, img_height), cv2.INTER_LINEAR)
     cam = np.maximum(cam, 0)
-    print(cam)
+    
     heatmap = cam / np.max(cam)
     # print(heatmap)
     cam_max = cam.max()
@@ -104,29 +86,31 @@ def grad_cam(input_model, image, cls, layer_name):
     return cam, heatmap
 
 
-print(model.get_layer(index=-1).name)
-cls = -1
-preprocessed_input = test_image
-layer_name = "activation_4"
-gradcam, heatmap = grad_cam(model, preprocessed_input, cls, layer_name)
-test_image = test_image.reshape(512, 512, 1)
-jetcam = cv2.applyColorMap(np.uint8(255 * gradcam), cv2.COLORMAP_JET)
+# print(model.get_layer(index = -1).name)
 
-jetcam = (np.float32(jetcam) + test_image) / 2
-plt.imshow(np.uint8(jetcam))
-plt.show()
-cv2.imwrite('gradcam.jpg', np.uint8(jetcam))
-im_frame = Image.open('gradcam.jpg')
-print(im_frame.mode)
-np_frame = np.array(im_frame.getdata(), dtype=np.uint8)
-image.Rows = im_frame.height
-image.Columns = im_frame.width
-image.PhotometricInterpretation = "RGB"
-image.SamplesPerPixel = 3
-image.BitsStored = 8
-image.BitsAllocated = 8
-image.HighBit = 7
-image.PixelRepresentation = 0
-image.PixelData = np_frame.tobytes()
-# image.SliceLocation = 1
-image.save_as('result.dcm')
+def save_images_jpg(test_image,path_output):
+    cls = -1
+    preprocessed_input = test_image
+    layer_name = "activation_4"
+    gradcam,heatmap = grad_cam(model, preprocessed_input, cls, layer_name)
+    test_image = test_image.reshape(512,512,1)
+    jetcam = cv2.applyColorMap(np.uint8(255 * gradcam), cv2.COLORMAP_JET)
+    jetcam = (np.float32(jetcam) + test_image) / 2
+    cv2.imwrite(path_output, np.uint8(jetcam))
+
+def save_image_dcm(image,path_output_jpg,path_output):
+    im_frame =  Image.open(path_output_jpg)
+    # print(im_frame.mode)
+    np_frame = np.array(im_frame.getdata(),dtype=np.uint8)
+    image.Rows = im_frame.height
+    image.Columns = im_frame.width
+    image.PhotometricInterpretation = "RGB"
+    image.SamplesPerPixel = 3
+    image.BitsStored = 8
+    image.BitsAllocated = 8
+    image.HighBit = 7
+    image.PixelRepresentation = 0
+    image.PixelData = np_frame.tobytes()
+    image.save_as(path_output)
+
+load_folder(folder_path_test)
