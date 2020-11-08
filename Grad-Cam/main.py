@@ -1,10 +1,12 @@
 from source import load_data_human
 from source import model
 from tensorflow import keras
+from keras.models import load_model
 from keras import backend as K
 from source import model_train
 from source import model_test
-
+from source import predict
+from source import gradcam
 def main():
     folder_path = './dataset/'
     objects = ["Hip","Head","Knee","Pelvis","Shoulder"] 
@@ -22,8 +24,17 @@ def main():
     # models.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adam(),metrics=['accuracy'])
     # models.summary()
     # model_train.train(models,data_train,data_label, img_width, img_height)
-    model_test.predict(img_width, img_height)
+    # model_test.predict(img_width, img_height)
     
+    #phan class tap data duoc xao tron
+    # model = load_model('./model/model.h5')
+    # folder_path_input = './input/'
+    # predict.predict_folder(model,folder_path_input,img_width,img_height)
+
+    model_gradcam = load_model("./model/model_gradcam.h5")
+    path_gradcam_folder = "./output/"
+    path_output_gradcam = "./output_gradcam/"
+    gradcam.grad(model_gradcam,objects[1],path_gradcam_folder,path_output_gradcam,img_width,img_height)
 
 
 if __name__ == '__main__':
