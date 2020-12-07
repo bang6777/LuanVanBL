@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="image-viewer">
+    <meta name="apple-mobile-web-app-title" content="image-viewer">
+    <meta name="theme-color" content="#8B8B8B">
+    <meta name="msapplication-navbutton-color" content="#8B8B8B">
+    <meta name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent">
+    <meta name="msapplication-starturl" content="/itk-vtk-viewer/app/">
+    <meta name="viewport" content="width=device-width, initial-scale=1,
+    shrink-to-fit=no">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> 
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="icon" type="image/png" sizes="50x50"
+    href="/itk-vtk-viewer/logo.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="50x50" href="/itk-vtk-viewer/logo.png">
+
+    <script>
+      if ('serviceWorker' in navigator && document.location.protocol !== 'http:') {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('./serviceWorker.js').then(function (registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope)
+          }, function (err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err)
+          })
+        })
+      }
+    </script>
+    <link rel="icon" type="image/png" href="favicon-32x32.png">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row" style="padding-top: 10px;">
+        <div class="col-sm-4">
+          <button class="btn btn-primary" id="upload"style="margin-top: 10px;">Return Home</button>
+        </div>
+        <div class="col-sm-8" style="text-align: center;">
+          <label>Select DICOM file series or DICOM file:</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-5">
+          <div  class='control' style="border: 2px solid; width: 100%; height: 200px;">
+            <div style="margin-bottom: 20px;" >
+              <table>
+                <tr>
+                  <td>I</td>
+                  <td>
+                    <input
+                      class="Imin"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="Imax"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>J</td>
+                  <td>
+                    <input
+                      class="Jmin"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="Jmax"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>K</td>
+                  <td>
+                    <input
+                      class="Kmin"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="Kmax"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                </tr>
+              </table>
+            </div> 
+          </div>
+          <div  class='table' style="border: 2px solid; width: 100%; height: 300px;">
+              
+          </div>
+        </div>  
+        <div class="col-sm-7">
+          <div  class='display' style="border: 2px solid; width: 100%; height: 500px;">
+            
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <div  class='displayX' style="border: 2px solid; width: 100%; height: 250px; ">
+            
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div  class='displayY' style="border: 2px solid; width: 100%; height: 250px; ">
+            
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div  class='displayZ' style="border: 2px solid; width: 100%; height: 250px; ">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="itkVtkViewer.js"></script>
+    <script>
+      var container  = document.querySelector('.display');
+      var containerX = document.querySelector('.displayX');
+      var containerY = document.querySelector('.displayY');
+      var containerZ = document.querySelector('.displayZ');
+      var viewer  = itkVtkViewer.processParameters(container, { fullscreen: true });
+      var viewerX = itkVtkViewer.processParameters(containerX, { fullscreen: true });
+      var viewerY = itkVtkViewer.processParameters(containerY, { fullscreen: true });
+      var viewerZ = itkVtkViewer.processParameters(containerZ, { fullscreen: true });
+      if (!viewer) {
+        itkVtkViewer.createViewerFromLocalFiles(container);
+      }
+    </script>
+  </body>
+</html>
