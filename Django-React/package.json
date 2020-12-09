@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack --mode development ./GCAM_Classification/frontend/src/index.js --output ./GCAM_Classification/frontend/static/frontend/main.js",
+    "dev": "webpack --mode development --watch ./GCAM_Classification/frontend/src/index.js --output ./GCAM_Classification/frontend/static/frontend/main.js",
     "build": "webpack --mode production ./GCAM_Classification/frontend/src/index.js --output ./GCAM_Classification/frontend/static/frontend/main.js"
   },
   "keywords": [],
