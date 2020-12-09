@@ -182,7 +182,8 @@ const createViewer = (
     if (dataArray.getNumberOfComponents() > 1) {
       lookupTableProxy.setPresetName("Grayscale");
     } else {
-      lookupTableProxy.setPresetName("Viridis (matplotlib)");
+      // lookupTableProxy.setPresetName("Viridis (matplotlib)");
+      lookupTableProxy.setPresetName("Grayscale");
     }
     piecewiseFunction = proxyManager.getPiecewiseFunction(dataArray.getName());
 
