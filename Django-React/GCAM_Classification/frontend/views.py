@@ -39,12 +39,17 @@ def save_images_jpg(image, path_output):
 
 
 def index(request):
-    path_output_jpg = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/output/jpg"
-    path_output_dcm = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/output/dcm"
-    folder_path_input = 'D:/LuanVanBL/Django-React/GCAM_Classification/frontend/input'
+    return render(request, 'frontend/index.html')
+
+
+def ClsClick(request):
+    print("Đang chạy")
+    path_output_jpg = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/output/jpg/"
+    path_output_dcm = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/output/dcm/"
+    folder_path_input = 'D:/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
     model = load_model(
         "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/model_8_layers_epochs_40.h5")
-    img_width, img_height = 512, 512
+    img_width, img_height = 251, 251
     photos = list()
     images_path = os.listdir(folder_path_input)
     for n, images in enumerate(images_path):
@@ -54,20 +59,21 @@ def index(request):
         photo = pydicom.dcmread(files)
         # convert to numpy array
         arr = photo.pixel_array
-        photos = asarray(arr).astype(np.float32)
+        sunglasses = asarray(arr).astype(float)
+        sunglasses = cv2.resize(arr, dsize=(
+            img_width, img_height), interpolation=cv2.INTER_CUBIC)
+        photos = asarray(sunglasses).astype(np.float32)
         # determine class
         test_image = photos.reshape(1, img_width, img_height, 1)
         result = model.predict(test_image)
         result = np.argmax(result, axis=1)
         if result == 0:
-            output = "Hip"
-        elif result == 1:
             output = "Head"
+        elif result == 1:
+            output = "Hip"
         elif result == 2:
-            output = "Knee"
-        elif result == 3:
             output = "Pelvis"
-        elif result == 4:
+        elif result == 3:
             output = "Shoulder"
         src_fname = "images"+str(n)
         path_output_dcms = path_output_dcm + output
@@ -78,4 +84,3 @@ def index(request):
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
         save_images_jpg(photo, path_image_jpg)
         save_images_dcm(photo, path_image_jpg, path_image_dcm)
-    return render(request, 'frontend/index.html')
