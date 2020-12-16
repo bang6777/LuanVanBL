@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import ReactDOM from "react-dom";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./layout/Header";
 import Main from "./Main/Main";
 import Main1 from "./Main1/Main1";
@@ -25,7 +25,7 @@ class App extends Component {
       <Router>
         <Switch>
           <Route exact path="/" component={Main} />
-          <Route path="/ClsClick" component={Main1} />
+          <Route path="/ClsClick" component={Main} />
         </Switch>
       </Router>
     );

@@ -24,6 +24,20 @@ export default class Main1 extends Component {
     });
     console.log(item);
   };
+  componentDidMount() {
+    fetch("/ClsClick")
+      .then(response => {
+        if (response.status > 400) {
+          return this.setState(() => {
+            return { placeholder: "Something went wrong!" };
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+      });
+  }
   render() {
     return <div>Hello Hieu</div>;
   }

@@ -5,6 +5,11 @@ class Header extends Component {
   constructor(props) {
     super(props);
     // this.routeChange = this.routeChange.bind(this);
+    this.state = {
+      item: []
+    };
+    // this.handleChange = this.handleChange.bind(this);
+    // this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleCLick = () => {
     let item = {
@@ -12,8 +17,27 @@ class Header extends Component {
     };
     this.props.onClickSubmit(item);
   };
-
+  ClsClick = () => {
+    fetch("/ClsClick")
+      .then(response => {
+        if (response.status > 400) {
+          return this.setState(() => {
+            return { placeholder: "Something went wrong!" };
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        this.setState({
+          item: data
+        });
+        this.props.onClickSubmit(this.state.item);
+        // console.log(data);
+      });
+  };
   render() {
+    let { item } = this.state;
+    console.log(item);
     return (
       <div className="row">
         <div className="col-md-6">
@@ -25,9 +49,7 @@ class Header extends Component {
         <div className="col-md-6">
           <div className="col-md-6">
             <div className="GradCAM text-center">
-              <button className="btn btn-primary">
-                <Link to="/ClsClick">ClassClick</Link>
-              </button>
+              <button onClick={this.ClsClick}>ClsClick</button>
             </div>
           </div>
           <div className="col-md-2">

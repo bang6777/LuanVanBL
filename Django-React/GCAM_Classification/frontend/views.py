@@ -9,6 +9,8 @@ from tensorflow.keras.models import load_model
 from PIL import Image
 import cv2
 import numpy as np
+from django.http import HttpResponse
+import json
 
 
 def save_images_dcm(image, path_output_jpg, path_output):
@@ -39,6 +41,7 @@ def save_images_jpg(image, path_output):
 
 
 def index(request):
+    print("chạy ")
     return render(request, 'frontend/index.html')
 
 
@@ -84,3 +87,15 @@ def ClsClick(request):
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
         save_images_jpg(photo, path_image_jpg)
         save_images_dcm(photo, path_image_jpg, path_image_dcm)
+    return render(request, 'frontend/index.html')
+
+
+def hello(request):
+    data = {
+        'name': 'Raghav',
+        'location': 'India',
+        'is_active': False,
+        'count': 28
+    }
+    dump = json.dumps(data)
+    return HttpResponse(dump, content_type='application/json')
