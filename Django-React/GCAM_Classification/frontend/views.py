@@ -78,7 +78,7 @@ def ClsClick(request):
             output = "Pelvis"
         elif result == 3:
             output = "Shoulder"
-        src_fname = "images"+str(n)
+        src_fname = output+str(n)
         path_output_dcms = path_output_dcm + output
         print(path_output_dcms)
         path_image_jpg = os.path.join(
@@ -91,11 +91,12 @@ def ClsClick(request):
 
 
 def hello(request):
+    m = ["a", "b", "c"]
     data = {
-        'name': 'Raghav',
+        'name': m,
         'location': 'India',
         'is_active': False,
-        'count': 28
+        'count': 28,
     }
     dump = json.dumps(data)
     return HttpResponse(dump, content_type='application/json')

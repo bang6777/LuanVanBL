@@ -6,7 +6,8 @@ class Header extends Component {
     super(props);
     // this.routeChange = this.routeChange.bind(this);
     this.state = {
-      item: []
+      item: [],
+      placeholder: ""
     };
     // this.handleChange = this.handleChange.bind(this);
     // this.handleSubmit = this.handleSubmit.bind(this);
