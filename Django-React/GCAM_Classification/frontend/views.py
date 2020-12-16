@@ -10,6 +10,8 @@ from tensorflow.keras.models import load_model
 from PIL import Image
 import cv2
 import numpy as np
+import json
+from django.http import HttpResponse
 
 
 def save_images_dcm(image, path_output_jpg, path_output):

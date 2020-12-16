@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import ReactDOM from "react-dom";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 // import "./layout/Header";
 import Frame1 from "../Frame/Frame1";
 import Frame2 from "../Frame/Frame2";
@@ -18,13 +18,14 @@ export default class Main extends Component {
       data: []
     };
   }
-  handleSubmit = item => {
+  onClickSubmit = item => {
     this.setState({
       data: item
     });
-    console.log(item);
   };
   render() {
+    let { data } = this.state;
+    console.log(this.state.data);
     return (
       <div className="container">
         <div className="row">
@@ -36,11 +37,9 @@ export default class Main extends Component {
             </div>
           </div>
         </div>
-        <Header onClickSubmit={this.handleSubmit} />
+        <Header onClickSubmit={this.onClickSubmit} />
         <div className="row border-frame">
-          <div className="main">
-            <Form />
-          </div>
+          <div className="main">{/* <Form /> */}</div>
           <div className="frame-videos">
             <Frame1 data={this.state.data} />
             <Frame2 />
