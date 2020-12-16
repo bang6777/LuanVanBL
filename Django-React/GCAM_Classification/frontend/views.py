@@ -1,4 +1,6 @@
+
 from django.shortcuts import render
+<<<<<<< HEAD
 import numpy as np
 from numpy import asarray
 import os
@@ -36,10 +38,14 @@ def save_images_jpg(image, path_output):
     # Step 2. Rescaling grey scale between 0-255
     img_2d_scaled = (np.maximum(img_2d, 0) / img_2d.max()) * 255.0
     cv2.imwrite(path_output, img_2d_scaled)
+=======
+
+>>>>>>> parent of c21a1ab7... commit
 
 
 def index(request):
     return render(request, 'frontend/index.html')
+<<<<<<< HEAD
 
 
 def ClsClick(request):
@@ -97,3 +103,5 @@ def hello(request):
     }
     dump = json.dumps(data)
     return HttpResponse(dump, content_type='application/json')
+=======
+>>>>>>> parent of c21a1ab7... commit
