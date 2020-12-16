@@ -1,89 +1,218 @@
-<html>  
-<head>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://fb.me/react-15.1.0.js"></script>
-    <script src="https://fb.me/react-dom-15.1.0.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://npmcdn.com/react-router@3.0.2/umd/ReactRouter.min.js"></script>
-    <style>
-        #organ1 {
-        border: 2px solid;
-        }
-        #organ2 {
-        border: 2px solid;
-        }
-        #organ3 {
-        border: 2px solid;
-        }
-        #organ4 {
-        border: 2px solid;
-        }
-        #organ5 {
-        border: 2px solid;
-        }
-        #GradCam {
-        border: 2px solid crimson;
-        }
-        #border_detection{
-            border: 2px dotted;
-        }
-    </style>
-</head>
- 
-<body>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="manifest" href="manifest.json" />
+
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="image-viewer" />
+    <meta name="apple-mobile-web-app-title" content="image-viewer" />
+    <meta name="theme-color" content="#8B8B8B" />
+    <meta name="msapplication-navbutton-color" content="#8B8B8B" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="msapplication-starturl" content="/itk-vtk-viewer/app/" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1,
+    shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"
+    />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="50x50"
+      href="/itk-vtk-viewer/logo.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="50x50"
+      href="/itk-vtk-viewer/logo.png"
+    />
+
+    <script>
+      if (
+        "serviceWorker" in navigator &&
+        document.location.protocol !== "http:"
+      ) {
+        window.addEventListener("load", function() {
+          navigator.serviceWorker.register("./serviceWorker.js").then(
+            function(registration) {
+              // Registration was successful
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
+              );
+            },
+            function(err) {
+              // registration failed :(
+              console.log("ServiceWorker registration failed: ", err);
+            }
+          );
+        });
+      }
+    </script>
+    <link rel="icon" type="image/png" href="favicon-32x32.png" />
+  </head>
+  <body>
     <div class="container">
-        <div id="title">
-            <h1 style="text-align: center;background-color: chartreuse;">Visualize and detection organ human with GradCam</h1>
-        </div>
-
-        <div class="col-md-8">
-            <button class="btn btn-primary">Visualize</button>
-            <button class="btn btn-warning">Detection organ human</button>
-        </div>
-            <div class="col-md-4">
-            <button class="btn btn-danger">GradCam</button>
-        </div>
-        <br></br>
-        <div class="col-md-12" style="padding-top: 10dp;">
-            <button class="btn btn-primary">Choose file</button>
-            <input placeholder="Link Folder Detection"></input>
-        </div>
-        <div class="row" id="border_detection">
-        <div class="col-md-3" style="padding-top: 10dp;text-align: center;">
-            <label>Organ 1</label>
-            <div id="organ1" style="height: 300px;">
+      <!-- <div class="row">
+        <label>Select DICOM file series or DICOM file:</label>
+        <input name="inputFile" type="file" id="file" multiple />
+        <button class="btn btn-primary" id="upload" style="margin-top: 10px;">
+          Upload image
+        </button>
+      </div> -->
+      <div class="row">
+        <div class="col-sm-5">
+          <div
+            class="control"
+            style="border: 2px solid; width: 100%; height: 150px;"
+          >
+            <div style="margin-bottom: 20px;">
+              <table>
+                <tr>
+                  <td>X</td>
+                  <td>
+                    <input
+                      class="Imin"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="Imax"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Y</td>
+                  <td>
+                    <input
+                      class="Jmin"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="Jmax"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Z</td>
+                  <td>
+                    <input
+                      class="Kmin"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="Kmax"
+                      type="range"
+                      min="0"
+                      max="2.0"
+                      step="1"
+                      value="1"
+                    />
+                  </td>
+                </tr>
+              </table>
             </div>
+          </div>
+          <div
+            class="table"
+            style="border: 2px solid; width: 100%; height: 250px;"
+          ></div>
         </div>
-        <div class="col-md-3" style="padding-top: 10dp;text-align: center;">
-            <label>Organ 2</label>
-            <div id="organ2" style="height: 300px;">
-                
-            </div>
+        <div class="col-sm-7">
+          <div
+            class="display"
+            style="border: 2px solid; width: 100%; height: 400px;"
+          ></div>
         </div>
-        <div class="col-md-6" style="padding-top: 10dp; text-align: center;">
-            <label>Gradcam</label>
-            <div id="gradcam" style="height: 300px;">
-            </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <div
+            class="displayX"
+            style="border: 2px solid; width: 100%; height: 250px; "
+          ></div>
         </div>
-        <div class="col-md-3" style="padding-top: 10dp; text-align: center;">
-            <label>Organ 3</label>
-            <div id="organ3" style="height: 300px;">
-            </div>
+        <div class="col-sm-4">
+          <div
+            class="displayY"
+            style="border: 2px solid; width: 100%; height: 250px; "
+          ></div>
         </div>
-        <div class="col-md-3" style="padding-top: 10dp; text-align: center;">
-            <label>Organ 4</label>
-            <div id="organ4" style="height: 300px;">
-            </div>
+        <div class="col-sm-4">
+          <div
+            class="displayZ"
+            style="border: 2px solid; width: 100%; height: 250px; "
+          ></div>
         </div>
-        <div class="col-md-3" style="padding-top: 10dp; text-align: center;">
-            <label>Organ 5</label>
-            <div id="organ5" style="height: 300px;">
-            </div>
-        </div>
+      </div>
     </div>
-    </div>
-
-</body>
+    <script type="text/javascript" src="itkVtkViewer.js"></script>
+    <script>
+      var container = document.querySelector(".display");
+      var containerX = document.querySelector(".displayX");
+      var containerY = document.querySelector(".displayY");
+      var containerZ = document.querySelector(".displayZ");
+      var viewer = itkVtkViewer.processParameters(container, {
+        fullscreen: true
+      });
+      var viewerX = itkVtkViewer.processParameters(containerX, {
+        fullscreen: true
+      });
+      var viewerY = itkVtkViewer.processParameters(containerY, {
+        fullscreen: true
+      });
+      var viewerZ = itkVtkViewer.processParameters(containerZ, {
+        fullscreen: true
+      });
+      if (!viewer) {
+        itkVtkViewer.createViewerFromLocalFiles(container);
+      }
+    </script>
+  </body>
 </html>
-

@@ -73,3 +73,4 @@ def index(request):
         save_images_jpg(photo,path_image_jpg)
         save_images_dcm(photo,path_image_jpg,path_image_dcm )
     return render(request, 'frontend/index.html')
+
