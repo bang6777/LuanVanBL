@@ -1,0 +1,310 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.file-field {
+  position: relative;
+}
+.md-form {
+  position: relative;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.file-field input[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  filter: alpha(opacity=0);
+  opacity: 0;
+}
+.file-field .file-path-wrapper {
+  padding-left: 10px;
+  overflow: hidden;
+}
+.file-field .btn {
+  float: left;
+}
+.waves-effect {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.md-form input[type="text"]:not(.browser-default) {
+  box-sizing: content-box;
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid #ced4da;
+  border-radius: 0;
+  outline: 0;
+}
+.my-3 {
+  margin-top: 1rem !important;
+}
+.my-3 {
+  margin-bottom: 1rem !important;
+}
+.file-field input.file-path {
+  height: 26px;
+}
+.md-form .validate {
+  margin-bottom: 2.5rem;
+}
+.md-form input[type="text"]:not(.browser-default) {
+  box-sizing: content-box;
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid #ced4da;
+  border-radius: 0;
+  outline: 0;
+}
+.row.main {
+  margin: 10px 0px;
+}
+.frame {
+  position: relative;
+  height: auto;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.frame {
+  border: 2px #ddd solid;
+  max-width: 100%;
+  height: 240px;
+}
+.border-frame {
+  position: relative;
+  margin-top: 20px;
+  border: 4px #ddd dotted;
+}
+.frame-color {
+  max-width: 100%;
+  height: 240px;
+  border: 2px rgb(218, 21, 21) solid;
+}
+.frame-videos {
+  margin-top: 50px;
+}
+.main {
+  position: absolute;
+  top: -20px;
+  left: 10px;
+}
+.class-title.text-center {
+  color: #ffff;
+  margin: 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+section {
+  background-color: black;
+}
+.panel-default > .panel-heading {
+  background-color: #4caf50;
+}
+.file-path-wrapper input {
+  color: #ffff;
+  font-size: 18px;
+}
+.visualize.detection button {
+  margin: 0 4px;
+}
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.file-field {
+  position: relative;
+}
+.md-form {
+  position: relative;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.file-field input[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  filter: alpha(opacity=0);
+  opacity: 0;
+}
+.file-field .file-path-wrapper {
+  padding-left: 10px;
+  overflow: hidden;
+}
+.file-field .btn {
+  float: left;
+}
+.waves-effect {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.md-form input[type="text"]:not(.browser-default) {
+  box-sizing: content-box;
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid #ced4da;
+  border-radius: 0;
+  outline: 0;
+}
+.my-3 {
+  margin-top: 1rem !important;
+}
+.my-3 {
+  margin-bottom: 1rem !important;
+}
+.file-field input.file-path {
+  height: 26px;
+}
+.md-form .validate {
+  margin-bottom: 2.5rem;
+}
+.md-form input[type="text"]:not(.browser-default) {
+  box-sizing: content-box;
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid #ced4da;
+  border-radius: 0;
+  outline: 0;
+}
+.row.main {
+  margin: 10px 0px;
+}
+.frame {
+  position: relative;
+  height: auto;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.frame {
+  border: 2px #ddd solid;
+  max-width: 100%;
+  height: 240px;
+}
+.border-frame {
+  position: relative;
+  margin-top: 20px;
+  border: 4px #ddd dotted;
+}
+.frame-color {
+  max-width: 100%;
+  height: 240px;
+  border: 2px rgb(218, 21, 21) solid;
+}
+.frame-videos {
+  margin-top: 50px;
+}
+.main {
+  position: absolute;
+  top: -20px;
+  left: 10px;
+}
+.class-title.text-center {
+  color: #ffff;
+  margin: 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+section {
+  background-color: black;
+}
+.panel-default > .panel-heading {
+  background-color: #4caf50;
+}
+.file-path-wrapper input {
+  color: #ffff;
+  font-size: 18px;
+}
+.visualize.detection button {
+  margin: 0 4px;
+}

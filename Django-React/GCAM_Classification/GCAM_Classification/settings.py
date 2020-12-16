@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'GCAM_Cls',
+    'GCAM_Classification',
     'rest_framework',
     'frontend'
 ]
