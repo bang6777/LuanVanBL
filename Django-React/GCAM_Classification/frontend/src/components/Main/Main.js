@@ -24,7 +24,6 @@ export default class Main extends Component {
     });
     console.log(item);
   };
-
   render() {
     return (
       <div className="container">

@@ -9,8 +9,6 @@ from tensorflow.keras.models import load_model
 from PIL import Image
 import cv2
 import numpy as np
-from django.http import HttpResponse
-import json
 
 
 def save_images_dcm(image, path_output_jpg, path_output):
@@ -41,7 +39,6 @@ def save_images_jpg(image, path_output):
 
 
 def index(request):
-    print("chạy ")
     return render(request, 'frontend/index.html')
 
 

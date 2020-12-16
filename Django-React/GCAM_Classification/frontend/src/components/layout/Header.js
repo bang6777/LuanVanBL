@@ -18,27 +18,8 @@ class Header extends Component {
     };
     this.props.onClickSubmit(item);
   };
-  ClsClick = () => {
-    fetch("/ClsClick")
-      .then(response => {
-        if (response.status > 400) {
-          return this.setState(() => {
-            return { placeholder: "Something went wrong!" };
-          });
-        }
-        return response.json();
-      })
-      .then(data => {
-        this.setState({
-          item: data
-        });
-        this.props.onClickSubmit(this.state.item);
-        // console.log(data);
-      });
-  };
+
   render() {
-    let { item } = this.state;
-    console.log(item);
     return (
       <div className="row">
         <div className="col-md-6">
@@ -50,7 +31,9 @@ class Header extends Component {
         <div className="col-md-6">
           <div className="col-md-6">
             <div className="GradCAM text-center">
-              <button onClick={this.ClsClick}>ClsClick</button>
+              <button className="btn btn-primary">
+                <Link to="/ClsClick">ClassClick</Link>
+              </button>
             </div>
           </div>
           <div className="col-md-2">
