@@ -45,15 +45,15 @@ def index(request):
     return render(request, 'frontend/index.html')
 
 
-def ClsClick(request):
+def Predict_Human(request):
     print("Đang chạy")
-    path_output_jpg = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/output/jpg/"
-    path_output_dcm = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/output/dcm/"
-    folder_path_input = 'D:/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
-    model = load_model(
-        "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/model_8_layers_epochs_40.h5")
+    path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/output/jpg/"
+    path_output_dcm = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/output/dcm/"
+    folder_path_input = 'C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
+    model = load_model("C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/model_8_layers_epochs_40.h5")
     img_width, img_height = 251, 251
     photos = list()
+    mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
     images_path = os.listdir(folder_path_input)
     for n, images in enumerate(images_path):
         # print("Images",images)
@@ -87,7 +87,23 @@ def ClsClick(request):
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
         save_images_jpg(photo, path_image_jpg)
         save_images_dcm(photo, path_image_jpg, path_image_dcm)
-    return render(request, 'frontend/index.html')
+        if(output == "Head"):
+            mutifiles_head.append(path_image_jpg)
+        elif(output == "Hip"):
+            mutifiles_hip.append(path_image_jpg)
+        elif(output == "Pelvis"):
+            mutifiles_pelvis.append(path_image_jpg)
+        elif(output == "Shoulder"):
+            mutifiles_shoulder.append(path_image_jpg)
+
+    data = {
+        'head': mutifiles_head,
+        'hip': mutifiles_hip,
+        'pelvis': mutifiles_pelvis,
+        'shoulder': mutifiles_shoulder,
+    }
+    dump = json.dumps(data)
+    return HttpResponse(dump, content_type='application/json')
 
 
 def hello(request):
