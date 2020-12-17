@@ -37,6 +37,7 @@ class Header extends Component {
   };
   render() {
     let { item } = this.state;
+
     return (
       <div className="row">
         <div className="col-md-6">

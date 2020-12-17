@@ -25,7 +25,7 @@ export default class Main extends Component {
   };
   render() {
     let { data } = this.state;
-    console.log(this.state.data);
+
     return (
       <div className="container">
         <div className="row">
@@ -39,7 +39,9 @@ export default class Main extends Component {
         </div>
         <Header onClickSubmit={this.onClickSubmit} />
         <div className="row border-frame">
-          <div className="main">{/* <Form /> */}</div>
+          <div className="main">
+            <Form />
+          </div>
           <div className="frame-videos">
             <Frame1 data={this.state.data} />
             <Frame2 />

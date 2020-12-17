@@ -9,13 +9,17 @@ class Form extends Component {
   }
   handleChange = e => {
     this.setState({
-      [e.target.name]: e.target.value,
-      link: e.target.files
+      [e.target.name]: e.target.value
+    });
+  };
+  handleChangeFile = e => {
+    this.setState({
+      link: e.target.files[0]
     });
   };
   render() {
     let { link } = this.state;
-    console.log(this.link);
+
     return (
       <form className="md-form">
         <div className="file-field">
@@ -24,7 +28,7 @@ class Form extends Component {
             <input
               type="file"
               id="file-input"
-              onChange={this.handleChange}
+              onChange={this.handleChangeFile}
               // webkitdirectory=""
               // directory=""
               multiple
@@ -33,7 +37,6 @@ class Form extends Component {
           <div className="file-path-wrapper">
             <input
               value={this.state.link}
-              name={this.state.link[4]}
               className="file-path validate"
               type="text"
               placeholder="Link folder Detection"
