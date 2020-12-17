@@ -42,15 +42,15 @@ class Header extends Component {
         <div className="col-md-6">
           <div className="visualize detection">
             <button className="btn btn-primary">Visualize</button>
-            <button className="btn btn-warning">Detection organ human</button>
+            <button className="btn btn-warning" onClick={this.ClsClick}>Detection organ human</button>
           </div>
         </div>
         <div className="col-md-6">
           <div className="col-md-6">
             <div className="GradCAM text-center">
-              <button className="btn btn-primary" onClick={this.ClsClick}>
+              {/* <button className="btn btn-primary" onClick={this.ClsClick}>
                 ClsClick
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="col-md-2">

@@ -8,8 +8,22 @@ export default class Frame4 extends Component {
     return (
       <div className="col-md-3">
         <div className="class-title text-center">Pelvis</div>
-        <div className="frame">{data.pelvis}</div>
+        <div className="frame">{this.showImgPelvis(data)}</div>
       </div>
     );
+  }
+  showImgPelvis(data){
+      let result=null;
+      if( data.pelvis == null){
+        result = null
+      }else{
+        result=data.pelvis.map(grade=>{
+          console.log("dasha",grade)
+          return(
+            <img src = {grade}></img>
+          )
+          })
+      }
+      return result;
   }
 }

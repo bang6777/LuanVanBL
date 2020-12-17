@@ -43,7 +43,7 @@ export default class Main extends Component {
           <div className="frame-videos">
             <Frame1 data={this.state.data} />
             <Frame2 data={this.state.data}/>
-            <Gradcam />
+            <Gradcam data ={this.state.data} />
             <Frame3 data={this.state.data}/>
             <Frame4 data={this.state.data}/>
             {/* <Frame5 /> */}

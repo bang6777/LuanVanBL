@@ -8,11 +8,11 @@ export default class Frame1 extends Component {
     return (
       <div className="col-md-3">
         <div className="class-title text-center">Head</div>
-        <div className="frame">{this.showImg(data)}</div>
+        <div className="frame">{this.showImghead(data)}</div>
       </div>
     );
   }
-  showImg(data){
+  showImghead(data){
       let result=null;
       if( data.head == null){
         result = null
