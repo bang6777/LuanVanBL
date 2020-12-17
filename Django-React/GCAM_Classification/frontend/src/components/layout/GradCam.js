@@ -8,5 +8,17 @@ class Gradcam extends Component {
       </div>
     );
   }
+  showImgGrad(data) {
+    let result = null;
+    if (data.head == null) {
+      result = null;
+    } else {
+      result = data.head.map(function (h, index) {
+        console.log("dasha", h);
+        return <img key={index} src={"/static/output/jpg/" + h}></img>;
+      });
+    }
+    return result;
+  }
 }
 export default Gradcam;
