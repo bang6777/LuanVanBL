@@ -108,14 +108,19 @@
 }
 .frame {
   position: relative;
-  height: auto;
+  /* height: auto; */
   margin: 0 auto;
-  overflow: hidden;
+  overflow: scroll;
 }
 .frame {
   border: 2px #ddd solid;
-  max-width: 100%;
+  width: 540px;
   height: 240px;
+  padding: 2px;
+}
+.frame img {
+  height: 140px;
+  width: 140px;
 }
 .border-frame {
   position: relative;

@@ -38,15 +38,14 @@ export default class Main extends Component {
           </div>
         </div>
         <Header onClickSubmit={this.onClickSubmit} />
-        <div className="row border-frame">
-          <div className="main">{/* <Form /> */}</div>
-          <div className="frame-videos">
+        <div className="frame-videos">
+          <div className="row border-frame">
             <Frame1 data={this.state.data} />
             <Frame2 />
-            <Gradcam />
-            <Frame3 />
+          </div>
+          <div className="row border-frame">
+            <Frame3 data={this.state.data} />
             <Frame4 />
-            {/* <Frame5 /> */}
           </div>
         </div>
       </div>
