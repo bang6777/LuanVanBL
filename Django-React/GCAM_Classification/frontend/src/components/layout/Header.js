@@ -43,9 +43,7 @@ class Header extends Component {
         <div className="col-md-6">
           <div className="visualize detection">
             <button className="btn btn-primary">Visualize</button>
-            <button className="btn btn-warning" onClick={this.ClsClick}>
-              Detection organ human
-            </button>
+            <button className="btn btn-warning">Detection organ human</button>
           </div>
         </div>
         <div className="col-md-6">
