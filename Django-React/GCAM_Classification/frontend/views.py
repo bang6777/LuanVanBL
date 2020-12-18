@@ -12,16 +12,14 @@ import cv2
 import numpy as np
 import json
 from django.http import HttpResponse
-
-
+import tensorflow as tf
+import tensorflow.keras.backend as K
 def save_images_dcm(image, path_output_jpg, path_output):
     im_frame = Image.open(path_output_jpg)
     # print(im_frame.mode)
     # if im_frame.mode = L then image.PhotometricInterpretation = "MONOCHROME1"
     # if im_frame.mode = RGBA then image.PhotometricInterpretation = "RGB"
     np_frame = np.array(im_frame.getdata(), dtype=np.uint8)
-    image.Rows = im_frame.height
-    image.Columns = im_frame.width
     image.PhotometricInterpretation = "MONOCHROME1"
     image.SamplesPerPixel = 1
     image.BitsStored = 8
@@ -44,7 +42,8 @@ def save_images_jpg(image, path_output):
 def index(request):
     return render(request, 'frontend/index.html')
 
-
+def save_images_jpg_gradcam(image, path_output):
+    cv2.imwrite(path_output,np.uint8(image.astype(float)))
 def Predict_Human(request):
     print("Đang chạy")
     path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/jpg/"
@@ -107,14 +106,15 @@ def Predict_Human(request):
 
 
 def GradCam(request):
+    print("đang chạy Gradcam")
     img_width=512
     img_height=512
-    path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/jpg/"
-    path_output_dcm = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/dcm/"
-    model = load_model("C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/models_Gradcam.h5")
-    folder_path_input="C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
-    organ ="Head"
-    folder_path_input = folder_path_input+organ+"/"
+    path_output_jpg = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/jpg/"
+    path_output_dcm = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/dcm/"
+    model = load_model("D:/LuanVanBL/Django-React/GCAM_Classification/frontend/model/models.h5")
+    folder_path_input="D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
+    organ ="Head/"
+    folder_path_input = folder_path_input+organ
     mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
     images_path = os.listdir(folder_path_input)
     for n, images in enumerate(images_path):
@@ -167,22 +167,24 @@ def GradCam(request):
         new[:,:,2] = new[:,:,1] = new[:,:,0] = sunglasses
         # jetcam = (np.float32(grad_cam_img)+np.float32(heatmap))
         jetcam = (np.float32(heatmap) + new) / 2
-        src_fname = organ+str(n)
+        organNew = organ[:-1]
+        src_fname = organNew+str(n)
         path_output_dcms = path_output_dcm + organ
         path_output_jpg = path_output_jpg+organ
         path_image_jpg = os.path.join(
             path_output_jpg, os.path.basename(src_fname)+'.jpg')
         path_image_dcm = os.path.join(
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
-        save_images_jpg(jetcam, path_image_jpg)
+        save_images_jpg_gradcam(jetcam, path_image_jpg)
         save_images_dcm(jetcam, path_image_jpg, path_image_dcm)
-        if(organ == "Head"):
+        
+        if(organNew == "Head"):
             mutifiles_head.append(path_image_jpg)
-        elif(organ == "Hip"):
+        elif(organNew == "Hip"):
             mutifiles_hip.append(path_image_jpg)
-        elif(organ == "Pelvis"):
+        elif(organNew == "Pelvis"):
             mutifiles_pelvis.append(path_image_jpg)
-        elif(organ == "Shoulder"):
+        elif(organNew == "Shoulder"):
             mutifiles_shoulder.append(path_image_jpg)
     data = {
         'head_grad': mutifiles_head,

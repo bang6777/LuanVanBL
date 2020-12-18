@@ -18,8 +18,8 @@ class Header extends Component {
     };
     this.props.onClickSubmit(item);
   };
-  ClsClick = item => {
-    fetch("/ClsClick")
+  GradClick = item => {
+    fetch("/GradCAMClick")
       .then(response => {
         if (response.status > 400) {
           return this.setState(() => {
@@ -32,6 +32,7 @@ class Header extends Component {
         this.setState({
           item: data
         });
+        console.log("click");
         this.props.onClickSubmit(this.state.item);
       });
   };
@@ -53,7 +54,7 @@ class Header extends Component {
         <div className="col-md-6">
           <div className="col-md-2">
             <div className="Cls text-center">
-              <button className="btn btn-danger" onClick={this.handleCLick}>
+              <button className="btn btn-danger" onClick={this.GradClick}>
                 GradCAM
               </button>
             </div>
