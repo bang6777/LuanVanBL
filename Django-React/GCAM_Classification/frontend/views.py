@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 import numpy as np
 from numpy import asarray
@@ -14,12 +13,15 @@ import json
 from django.http import HttpResponse
 import tensorflow as tf
 import tensorflow.keras.backend as K
-def save_images_dcm(image, path_output_jpg, path_output):
-    im_frame = Image.open(path_output_jpg)
+def save_images_dcm(image,path_output_jpg,path_output):
+    # images_path = os.listdir(path_output_jpg)
+    im_frame =  Image.open(path_output_jpg)
     # print(im_frame.mode)
     # if im_frame.mode = L then image.PhotometricInterpretation = "MONOCHROME1"
     # if im_frame.mode = RGBA then image.PhotometricInterpretation = "RGB"
-    np_frame = np.array(im_frame.getdata(), dtype=np.uint8)
+    np_frame = np.array(im_frame.getdata(),dtype=np.uint8)
+    image.Rows = im_frame.height
+    image.Columns = im_frame.width
     image.PhotometricInterpretation = "MONOCHROME1"
     image.SamplesPerPixel = 1
     image.BitsStored = 8
@@ -176,7 +178,7 @@ def GradCam(request):
         path_image_dcm = os.path.join(
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
         save_images_jpg_gradcam(jetcam, path_image_jpg)
-        save_images_dcm(jetcam, path_image_jpg, path_image_dcm)
+        save_images_dcm(photo, path_image_jpg, path_image_dcm)
         
         if(organNew == "Head"):
             mutifiles_head.append(path_image_jpg)

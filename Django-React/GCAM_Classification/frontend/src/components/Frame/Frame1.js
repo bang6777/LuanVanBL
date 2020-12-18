@@ -10,20 +10,11 @@ export default class Frame1 extends Component {
     return (
       <div className="col-md-6">
         <div className="class-title text-center">Head</div>
-        <div className="frame">{this.showImg(data)}</div>
-        {/* <div className="frame">
-          <img src={"/static/output/images7.jpg"}></img>
-          <img src={"/static/output/images7.jpg"}></img>
-          <img src={"/static/output/images7.jpg"}></img>
-          <img src={"/static/output/images7.jpg"}></img>
-          <img src={"/static/output/images7.jpg"}></img>
-          <img src={"/static/output/images7.jpg"}></img>
-          <img src={"/static/output/images7.jpg"}></img>
-        </div> */}
+        <div className="frame">{this.showImgHead(data)}</div>
       </div>
     );
   }
-  showImg(data) {
+  showImgHead(data) {
     let result = null;
     if (data.head == null) {
       result = null;

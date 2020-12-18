@@ -36,6 +36,7 @@ class Header extends Component {
         this.props.onClickSubmit(this.state.item);
       });
   };
+  GradCamU = item => {};
   render() {
     let { item } = this.state;
 

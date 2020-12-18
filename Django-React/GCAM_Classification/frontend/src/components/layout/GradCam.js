@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 class Gradcam extends Component {
   render() {
+    let { data } = this.props;
+    console.log(data);
     return (
       <div className="col-md-12">
         <div className="class-title text-center">Gradcam</div>
-        <div className="frameGradCam frame-color"></div>
+        <div className="frameGradCam frame-color">{this.showImgGrad(data)}</div>
       </div>
     );
   }

@@ -18,6 +18,23 @@ class Header extends Component {
     };
     this.props.onClickSubmit(item);
   };
+  GradCamUI = item => {
+    fetch("/ClsClick")
+      .then(response => {
+        if (response.status > 400) {
+          return this.setState(() => {
+            return { placeholder: "Something went wrong!" };
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        this.setState({
+          item: data
+        });
+        this.props.onClickSubmit1(this.state.item);
+      });
+  };
   ClsClick = item => {
     fetch("/ClsClick")
       .then(response => {
@@ -46,7 +63,9 @@ class Header extends Component {
               <Link to="/">Classification</Link>
             </button>
             <button className="btn btn-warning">
-              <Link to="/GradCamUI">GradCamUI</Link>
+              <Link to="/GradCamUI" onClick={this.GradCamUI}>
+                GradCamUI
+              </Link>
             </button>
           </div>
         </div>
