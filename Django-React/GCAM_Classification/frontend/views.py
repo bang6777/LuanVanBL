@@ -93,18 +93,7 @@ def ClsClick(request):
 def hello(request):
     m = ["a", "b", "c"]
     data = {
-        'name': ["a", "b", "c"],
-        'location': 'India',
-        'is_active': False,
-        'count': 28,
-    }
-    dump = json.dumps(data)
-    return HttpResponse(dump, content_type='application/json')
-
-
-def pathImg(request):
-    data = {
-        'name': 'bang',
+        'name': m,
         'location': 'India',
         'is_active': False,
         'count': 28,
