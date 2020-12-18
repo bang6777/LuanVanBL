@@ -7,7 +7,7 @@ import Frame2 from "../Frame/Frame2";
 import Frame3 from "../Frame/Frame3";
 import Frame4 from "../Frame/Frame4";
 import Frame5 from "../Frame/Frame5";
-import Header from "../layout/Header";
+import HeaderGrad from "../headerGrad/headerGrad";
 import Form from "../layout/Form";
 import Gradcam from "../layout/GradCam";
 // import "./App.css";
@@ -25,6 +25,26 @@ export default class Main1 extends Component {
     console.log(item);
   };
   render() {
-    return <div>Hello Hieu</div>;
+    let { data } = this.state;
+    console.log(this.state.data);
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="panel panel-success">
+            <div className="panel-heading">
+              <h3 className="panel-title text-center ">
+                Visualize and detection organ human with GradCam
+              </h3>
+            </div>
+          </div>
+        </div>
+        <HeaderGrad onClickSubmit={this.onClickSubmit} />
+        <div className="frame-videos-GradCam">
+          <div className="row border-frame">
+            <Gradcam />
+          </div>
+        </div>
+      </div>
+    );
   }
 }

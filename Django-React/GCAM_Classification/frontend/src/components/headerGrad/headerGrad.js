@@ -52,9 +52,9 @@ class Header extends Component {
         </div>
         <div className="col-md-6">
           <div className="col-md-2">
-            <div className="GradCAM text-center">
-              <button className="btn btn-primary" onClick={this.ClsClick}>
-                ClsClick
+            <div className="Cls text-center">
+              <button className="btn btn-danger" onClick={this.handleCLick}>
+                GradCAM
               </button>
             </div>
           </div>
