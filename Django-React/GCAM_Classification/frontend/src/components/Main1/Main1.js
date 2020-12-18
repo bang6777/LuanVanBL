@@ -7,7 +7,7 @@ import Frame2 from "../Frame/Frame2";
 import Frame3 from "../Frame/Frame3";
 import Frame4 from "../Frame/Frame4";
 import Frame5 from "../Frame/Frame5";
-import Header from "../layout/Header";
+import HeaderGrad from "../headerGrad/headerGrad";
 import Form from "../layout/Form";
 import Gradcam from "../layout/GradCam";
 // import "./App.css";
@@ -38,7 +38,7 @@ export default class Main1 extends Component {
             </div>
           </div>
         </div>
-        <Header onClickSubmit={this.onClickSubmit} />
+        <HeaderGrad onClickSubmit={this.onClickSubmit} />
         <div className="frame-videos-GradCam">
           <div className="row border-frame">
             <Gradcam />
