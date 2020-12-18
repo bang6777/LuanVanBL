@@ -8,23 +8,23 @@ export default class Frame2 extends Component {
     return (
       <div className="col-md-6">
         <div className="class-title text-center">Shoulder</div>
-        <div className="frame">{this.showImgShoulder(data)}</div>
+        <div className="frame"></div>
       </div>
     );
   }
-  showImgShoulder(data){
-      let result=null;
-      if( data.shoulder == null){
-        result = null
-      }else{
-        result=data.shoulder.map(grade=>{
-          console.log("dasha",grade)
-          return(
-            <img src = {grade}></img>
+  // showImgShoulder(data){
+  //     let result=null;
+  //     if( data.shoulder == null){
+  //       result = null
+  //     }else{
+  //       result=data.shoulder.map(grade=>{
+  //         console.log("dasha",grade)
+  //         return(
+  //           <img src = {grade}></img>
 
-          )
-          })
-      }
-      return result;
-  }
+  //         )
+  //         })
+  //     }
+  //     return result;
+  // }
 }

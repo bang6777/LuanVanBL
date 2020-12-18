@@ -10,8 +10,8 @@ export default class Frame1 extends Component {
     return (
       <div className="col-md-6">
         <div className="class-title text-center">Head</div>
-        {/* <div className="frame">{this.showImg(data)}</div> */}
-        <div className="frame">
+        <div className="frame">{this.showImg(data)}</div>
+        {/* <div className="frame">
           <img src={"/static/output/images7.jpg"}></img>
           <img src={"/static/output/images7.jpg"}></img>
           <img src={"/static/output/images7.jpg"}></img>
@@ -19,7 +19,7 @@ export default class Frame1 extends Component {
           <img src={"/static/output/images7.jpg"}></img>
           <img src={"/static/output/images7.jpg"}></img>
           <img src={"/static/output/images7.jpg"}></img>
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -28,9 +28,9 @@ export default class Frame1 extends Component {
     if (data.head == null) {
       result = null;
     } else {
-      result = data.head.map(grade => {
-        console.log("dasha", grade);
-        return <img src={grade}></img>;
+      result = data.head.map(function (h, index) {
+        console.log("dasha", h);
+        return <img key={index} src={"/static/output/jpg/" + h}></img>;
       });
     }
     return result;

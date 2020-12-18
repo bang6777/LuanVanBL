@@ -47,10 +47,10 @@ def index(request):
 
 def Predict_Human(request):
     print("Đang chạy")
-    path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/jpg/"
-    path_output_dcm = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
-    folder_path_input = 'C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
-    model = load_model("C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/model_8_layers_epochs_40.h5")
+    path_output_jpg = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/jpg/"
+    path_output_dcm = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
+    folder_path_input = 'D:/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
+    model = load_model("D:/LuanVanBL/Django-React/GCAM_Classification/frontend/model/model_8_layers_epochs_40.h5")
     img_width, img_height = 251, 251
     photos = list()
     mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
@@ -88,13 +88,13 @@ def Predict_Human(request):
         save_images_jpg(photo, path_image_jpg)
         save_images_dcm(photo, path_image_jpg, path_image_dcm)
         if(output == "Head"):
-            mutifiles_head.append(path_image_jpg)
+            mutifiles_head.append(src_fname+'.jpg')
         elif(output == "Hip"):
-            mutifiles_hip.append(path_image_jpg)
+            mutifiles_hip.append(src_fname+'.jpg')
         elif(output == "Pelvis"):
-            mutifiles_pelvis.append(path_image_jpg)
+            mutifiles_pelvis.append(src_fname+'.jpg')
         elif(output == "Shoulder"):
-            mutifiles_shoulder.append(path_image_jpg)
+            mutifiles_shoulder.append(src_fname+'.jpg')
 
     data = {
         'head': mutifiles_head,
@@ -109,10 +109,10 @@ def Predict_Human(request):
 def GradCam(request):
     img_width=512
     img_height=512
-    path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/jpg/"
-    path_output_dcm = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/dcm/"
-    model = load_model("C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/models_Gradcam.h5")
-    folder_path_input="C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
+    path_output_jpg = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/jpg/"
+    path_output_dcm = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/dcm/"
+    model = load_model("D:/LuanVanBL/Django-React/GCAM_Classification/frontend/model/models_Gradcam.h5")
+    folder_path_input="D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
     organ ="Head"
     folder_path_input = folder_path_input+organ+"/"
     mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
