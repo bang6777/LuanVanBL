@@ -26,6 +26,7 @@ class App extends Component {
         <Switch>
           <Route exact path="/" component={Main} />
           <Route path="/ClsClick" component={Main} />
+          <Route path="/GradCamUI" component={Main1} />
         </Switch>
       </Router>
     );

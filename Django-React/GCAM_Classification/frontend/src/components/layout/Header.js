@@ -42,8 +42,10 @@ class Header extends Component {
       <div className="row">
         <div className="col-md-6">
           <div className="visualize detection">
-            <button className="btn btn-primary">Visualize</button>
-            <button className="btn btn-warning">Detection organ human</button>
+            <button className="btn btn-primary">Classificaion</button>
+            <button className="btn btn-warning">
+              <Link to="/GradCamUI">GradCamUI</Link>
+            </button>
           </div>
         </div>
         <div className="col-md-6">

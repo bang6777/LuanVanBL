@@ -118,6 +118,10 @@
   height: 240px;
   padding: 2px;
 }
+.frameGradCam {
+  max-width: 100%;
+  overflow: scroll;
+}
 .frame img {
   height: 140px;
   width: 140px;
@@ -129,12 +133,17 @@
 }
 .frame-color {
   max-width: 100%;
-  height: 240px;
+  height: 540px;
   border: 2px rgb(218, 21, 21) solid;
 }
 .frame-videos {
   width: 100%;
   margin-top: 50px;
+}
+.frame-videos-GradCam {
+  width: 100%;
+  margin-top: 50px;
+  /* height: 100%; */
 }
 .main {
   position: absolute;

@@ -25,6 +25,26 @@ export default class Main1 extends Component {
     console.log(item);
   };
   render() {
-    return <div>Hello Hieu</div>;
+    let { data } = this.state;
+    console.log(this.state.data);
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="panel panel-success">
+            <div className="panel-heading">
+              <h3 className="panel-title text-center ">
+                Visualize and detection organ human with GradCam
+              </h3>
+            </div>
+          </div>
+        </div>
+        <Header onClickSubmit={this.onClickSubmit} />
+        <div className="frame-videos-GradCam">
+          <div className="row border-frame">
+            <Gradcam />
+          </div>
+        </div>
+      </div>
+    );
   }
 }

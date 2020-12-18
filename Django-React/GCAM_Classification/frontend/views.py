@@ -204,3 +204,5 @@ def hello(request):
     }
     dump = json.dumps(data)
     return HttpResponse(dump, content_type='application/json')
+def GradCamUI(request):
+    return render(request, 'frontend/index.html')
