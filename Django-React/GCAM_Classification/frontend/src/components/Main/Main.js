@@ -41,11 +41,11 @@ export default class Main extends Component {
         <div className="frame-videos">
           <div className="row border-frame">
             <Frame1 data={this.state.data} />
-            <Frame2 />
+            <Frame2 data={this.state.data} />
           </div>
           <div className="row border-frame">
             <Frame3 data={this.state.data} />
-            <Frame4 />
+            <Frame4 data={this.state.data} />
           </div>
         </div>
       </div>
