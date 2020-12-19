@@ -3,6 +3,7 @@ export default class Frame4 extends Component {
   constructor(props) {
     super(props);
   }
+  componentDidMount() {}
   render() {
     let { data } = this.props;
     return (
@@ -12,16 +13,16 @@ export default class Frame4 extends Component {
       </div>
     );
   }
-  showImgPelvis(data){
-      let result=null;
-      if( data.pelvis == null){
-        result = null
-      }else{
-        result=data.pelvis.map(function (h, index) {
-          console.log("dasha", h);
-          return <img key={index} src={"/static/output/jpg/" + h}></img>;
-        });
-      }
-      return result;
+  showImgPelvis(data) {
+    let result = null;
+    if (data.pelvis == null) {
+      result = null;
+    } else {
+      result = data.pelvis.map(function (h, index) {
+        console.log("dasha", h);
+        return <img key={index} src={"/static/output/jpg/" + h}></img>;
+      });
+    }
+    return result;
   }
 }

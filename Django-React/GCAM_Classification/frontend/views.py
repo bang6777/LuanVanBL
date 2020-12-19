@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 import numpy as np
 from numpy import asarray
@@ -14,12 +13,15 @@ import json
 from django.http import HttpResponse
 import tensorflow as tf
 import tensorflow.keras.backend as K
-def save_images_dcm(image, path_output_jpg, path_output):
-    im_frame = Image.open(path_output_jpg)
+def save_images_dcm(image,path_output_jpg,path_output):
+    # images_path = os.listdir(path_output_jpg)
+    im_frame =  Image.open(path_output_jpg)
     # print(im_frame.mode)
     # if im_frame.mode = L then image.PhotometricInterpretation = "MONOCHROME1"
     # if im_frame.mode = RGBA then image.PhotometricInterpretation = "RGB"
-    np_frame = np.array(im_frame.getdata(), dtype=np.uint8)
+    np_frame = np.array(im_frame.getdata(),dtype=np.uint8)
+    image.Rows = im_frame.height
+    image.Columns = im_frame.width
     image.PhotometricInterpretation = "MONOCHROME1"
     image.SamplesPerPixel = 1
     image.BitsStored = 8
@@ -46,10 +48,10 @@ def save_images_jpg_gradcam(image, path_output):
     cv2.imwrite(path_output,np.uint8(image.astype(float)))
 def Predict_Human(request):
     print("Đang chạy")
-    path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/jpg/"
-    path_output_dcm = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
-    folder_path_input = 'C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
-    model = load_model("C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/model_8_layers_epochs_40.h5")
+    path_output_jpg = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/jpg/"
+    path_output_dcm = "D:/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
+    folder_path_input = 'D:/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
+    model = load_model("D:/LuanVanBL/Django-React/GCAM_Classification/frontend/model/model_8_layers_epochs_40.h5")
     img_width, img_height = 251, 251
     photos = list()
     mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
@@ -176,7 +178,7 @@ def GradCam(request):
         path_image_dcm = os.path.join(
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
         save_images_jpg_gradcam(jetcam, path_image_jpg)
-        save_images_dcm(jetcam, path_image_jpg, path_image_dcm)
+        save_images_dcm(photo, path_image_jpg, path_image_dcm)
         
         if(organNew == "Head"):
             mutifiles_head.append(path_image_jpg)

@@ -3,6 +3,7 @@ export default class Frame3 extends Component {
   constructor(props) {
     super(props);
   }
+  componentDidMount() {}
   render() {
     let { data } = this.props;
     return (
@@ -12,16 +13,16 @@ export default class Frame3 extends Component {
       </div>
     );
   }
-  showImgHip(data){
-      let result=null;
-      if( data.hip == null){
-        result = null
-      }else{
-        result=data.hip.map(function (h, index) {
-          console.log("dasha", h);
-          return <img key={index} src={"/static/output/jpg/" + h}></img>;
-        });
-      }
-      return result;
+  showImgHip(data) {
+    let result = null;
+    if (data.hip == null) {
+      result = null;
+    } else {
+      result = data.hip.map(function (h, index) {
+        console.log("dasha", h);
+        return <img key={index} src={"/static/output/jpg/" + h}></img>;
+      });
+    }
+    return result;
   }
 }

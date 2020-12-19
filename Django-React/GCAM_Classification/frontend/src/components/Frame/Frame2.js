@@ -3,7 +3,7 @@ export default class Frame2 extends Component {
   constructor(props) {
     super(props);
   }
-  
+  componentDidMount() {}
   render() {
     let { data } = this.props;
     return (
@@ -13,16 +13,17 @@ export default class Frame2 extends Component {
       </div>
     );
   }
-  showImgShoulder(data){
-      let result=null;
-      if( data.shoulder == null){
-        result = null
-      }else{
-        result=data.shoulder.map(function (h, index) {
-          console.log("dasha", h);
-          return <img key={index} src={"/static/output/jpg/" + h}></img>;
-        });
-      }
-      return result;
+  showImgShoulder(data) {
+    let result = null;
+    console.log(data);
+    if (data.shoulder == null) {
+      result = null;
+    } else {
+      result = data.shoulder.map(function (h, index) {
+        console.log("dasha", h);
+        return <img key={index} src={"/static/output/jpg/" + h}></img>;
+      });
+    }
+    return result;
   }
 }

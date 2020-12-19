@@ -15,12 +15,18 @@ export default class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      data1: []
     };
   }
   onClickSubmit = item => {
     this.setState({
       data: item
+    });
+  };
+  onClickSubmit1 = item => {
+    this.setState({
+      data1: item
     });
   };
   render() {
@@ -37,7 +43,10 @@ export default class Main extends Component {
             </div>
           </div>
         </div>
-        <Header onClickSubmit={this.onClickSubmit} />
+        <Header
+          onClickSubmit={this.onClickSubmit}
+          onClickSubmit1={this.onClickSubmit1}
+        />
         <div className="frame-videos">
           <div className="row border-frame">
             <Frame1 data={this.state.data} />
