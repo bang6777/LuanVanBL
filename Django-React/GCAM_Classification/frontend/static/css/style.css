@@ -122,6 +122,10 @@
   max-width: 100%;
   overflow: scroll;
 }
+.frameGradCam img {
+  height: 140px;
+  width: 140px;
+}
 .frame img {
   height: 140px;
   width: 140px;
@@ -324,4 +328,3 @@ section {
 .visualize.detection button {
   margin: 0 4px;
 }
-

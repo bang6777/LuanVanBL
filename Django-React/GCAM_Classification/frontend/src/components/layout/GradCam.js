@@ -12,14 +12,48 @@ class Gradcam extends Component {
   }
   showImgGrad(data) {
     let result = null;
-    if (data.head == null) {
-      result = null;
-    } else {
-      result = data.head.map(function (h, index) {
+    console.log(data.length);
+    if (data.head_grad != null) {
+      result = data.head_grad.map(function (h, index) {
         console.log("dasha", h);
-        return <img key={index} src={"/static/output/jpg/" + h}></img>;
+        return (
+          <img
+            key={index}
+            src={"/static/output_gradcam/jpg/Head/Hip0.jpg"}
+          ></img>
+        );
       });
     }
+
+    if (data.pelvis_grad != null) {
+      result = data.pelvis_grad.map(function (h, index) {
+        console.log("dasha", h);
+        return (
+          <img key={index} src={"/static/output_gradcam/jpg/Pelvis/" + h}></img>
+        );
+      });
+    }
+    if (data.shoulder_grad != null) {
+      result = data.shoulder_grad.map(function (h, index) {
+        console.log("dasha", h);
+        return (
+          <img
+            key={index}
+            src={"/static/output_gradcam/jpg/Shoulder/" + h}
+          ></img>
+        );
+      });
+    }
+    if (data.hip_grad != null) {
+      result = data.hip_grad.map(function (h, index) {
+        console.log("dasha", h);
+        return (
+          <img key={index} src={"/static/output_gradcam/jpg/Hip/" + h}></img>
+        );
+      });
+    }
+
+    // console.log(result);
     return result;
   }
 }

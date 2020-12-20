@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'GCAM_Classification',
     'rest_framework',
+    'GCAM_Cls',
     'frontend'
 ]
 

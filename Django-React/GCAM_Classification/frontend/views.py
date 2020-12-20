@@ -22,7 +22,7 @@ def save_images_dcm(image,path_output_jpg,path_output):
     np_frame = np.array(im_frame.getdata(),dtype=np.uint8)
     image.Rows = im_frame.height
     image.Columns = im_frame.width
-    image.PhotometricInterpretation = "MONOCHROME1"
+    # image.PhotometricInterpretation = "RGB"
     image.SamplesPerPixel = 1
     image.BitsStored = 8
     image.BitsAllocated = 8
@@ -172,22 +172,22 @@ def GradCam(request):
         organNew = organ[:-1]
         src_fname = organNew+str(n)
         path_output_dcms = path_output_dcm + organ
-        path_output_jpg = path_output_jpg+organ
+        path_output_jpgs = path_output_jpg+organ
         path_image_jpg = os.path.join(
-            path_output_jpg, os.path.basename(src_fname)+'.jpg')
+            path_output_jpgs, os.path.basename(src_fname)+'.jpg')
         path_image_dcm = os.path.join(
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
         save_images_jpg_gradcam(jetcam, path_image_jpg)
         save_images_dcm(photo, path_image_jpg, path_image_dcm)
         
         if(organNew == "Head"):
-            mutifiles_head.append(path_image_jpg)
+            mutifiles_head.append(src_fname+'.jpg')
         elif(organNew == "Hip"):
-            mutifiles_hip.append(path_image_jpg)
+            mutifiles_hip.append(src_fname+'.jpg')
         elif(organNew == "Pelvis"):
-            mutifiles_pelvis.append(path_image_jpg)
+            mutifiles_pelvis.append(src_fname+'.jpg')
         elif(organNew == "Shoulder"):
-            mutifiles_shoulder.append(path_image_jpg)
+            mutifiles_shoulder.append(src_fname+'.jpg')
     data = {
         'head_grad': mutifiles_head,
         'hip_grad': mutifiles_hip,

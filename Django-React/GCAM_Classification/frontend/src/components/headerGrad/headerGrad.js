@@ -19,22 +19,34 @@ class Header extends Component {
     this.props.onClickSubmit(item);
   };
   GradClick = item => {
-    fetch("/GradCAMClick")
-      .then(response => {
-        if (response.status > 400) {
-          return this.setState(() => {
-            return { placeholder: "Something went wrong!" };
-          });
-        }
-        return response.json();
-      })
-      .then(data => {
-        this.setState({
-          item: data
-        });
-        console.log("click");
-        this.props.onClickSubmit(this.state.item);
-      });
+    // fetch("/GradCAMClick")
+    //   .then(response => {
+    //     if (response.status > 400) {
+    //       return this.setState(() => {
+    //         return { placeholder: "Something went wrong!" };
+    //       });
+    //     }
+    //     return response.json();
+    //   })
+    //   .then(data => {
+    //     this.setState({
+    //       item: data
+    //     });
+    //     this.props.onClickSubmit(this.state.item);
+    //   });
+    let item1 = {
+      // head_grad:[""],
+      head_grad: [""],
+      // hip_grad: [],
+      hip_grad: ["Hip1.jpg"],
+      // pelvis_grad: ["Pelvis1.jpg"],
+      pelvis_grad: [""],
+      // shoulder_grad: ["Shoulder1.jpg"]
+      shoulder_grad: [""]
+    };
+    console.log(item1);
+    console.log(item1.length);
+    this.props.onClickSubmit(item1);
   };
   GradCamU = item => {};
   render() {

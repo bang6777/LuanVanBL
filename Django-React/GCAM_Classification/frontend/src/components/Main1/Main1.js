@@ -41,7 +41,7 @@ export default class Main1 extends Component {
         <HeaderGrad onClickSubmit={this.handleSubmit} />
         <div className="frame-videos-GradCam">
           <div className="row border-frame">
-            <Gradcam data={data} />
+            <Gradcam data={this.state.data} />
           </div>
         </div>
       </div>
