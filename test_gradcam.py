@@ -49,79 +49,8 @@ def save_images_dcm(image,path_output_jpg,path_output):
     image.save_as(path_output)
 
 
-def save_images_jpg(image, path_output):
-    test_image = image.pixel_array
-    print(test_image.shape)
-    img_2d = test_image.astype(float)
-    # Step 2. Rescaling grey scale between 0-255
-    img_2d_scaled = (np.maximum(img_2d, 0) / img_2d.max()) * 255.0
-    cv2.imwrite(path_output, img_2d_scaled)
-
-
-def index(request):
-    return render(request, 'frontend/index.html')
-
 def save_images_jpg_gradcam(image, path_output):
     cv2.imwrite(path_output,np.uint8(image.astype(float)))
-def Predict_Human(request):
-    print("Đang chạy")
-    path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/jpg/"
-    path_output_dcm = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
-    folder_path_input = 'C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/input/'
-    model = load_model("C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/model_8_layers_epochs_40.h5")
-    img_width, img_height = 251, 251
-    photos = list()
-    mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
-    images_path = os.listdir(folder_path_input)
-    for n, images in enumerate(images_path):
-        # print("Images",images)
-        files = folder_path_input + images
-        # load image
-        photo = pydicom.dcmread(files)
-        # convert to numpy array
-        arr = photo.pixel_array
-        sunglasses = asarray(arr).astype(float)
-        sunglasses = cv2.resize(arr, dsize=(
-            img_width, img_height), interpolation=cv2.INTER_CUBIC)
-        photos = asarray(sunglasses).astype(np.float32)
-        # determine class
-        test_image = photos.reshape(1, img_width, img_height, 1)
-        result = model.predict(test_image)
-        result = np.argmax(result, axis=1)
-        if result == 0:
-            output = "Head"
-        elif result == 1:
-            output = "Hip"
-        elif result == 2:
-            output = "Pelvis"
-        elif result == 3:
-            output = "Shoulder"
-        src_fname = output+str(n)
-        path_output_dcms = path_output_dcm + output
-        print(path_output_dcms)
-        path_image_jpg = os.path.join(
-            path_output_jpg, os.path.basename(src_fname)+'.jpg')
-        path_image_dcm = os.path.join(
-            path_output_dcms, os.path.basename(src_fname)+'.dcm')
-        save_images_jpg(photo, path_image_jpg)
-        save_images_dcm(photo, path_image_jpg, path_image_dcm)
-        if(output == "Head"):
-            mutifiles_head.append(src_fname+'.jpg')
-        elif(output == "Hip"):
-            mutifiles_hip.append(src_fname+'.jpg')
-        elif(output == "Pelvis"):
-            mutifiles_pelvis.append(src_fname+'.jpg')
-        elif(output == "Shoulder"):
-            mutifiles_shoulder.append(src_fname+'.jpg')
-
-    data = {
-        'head': mutifiles_head,
-        'hip': mutifiles_hip,
-        'pelvis': mutifiles_pelvis,
-        'shoulder': mutifiles_shoulder,
-    }
-    dump = json.dumps(data)
-    return HttpResponse(dump, content_type='application/json')
 
 def make_gradcam_heatmap(
     img_array, model, last_conv_layer_name, classifier_layer_names
@@ -172,16 +101,18 @@ def make_gradcam_heatmap(
     # For visualization purpose, we will also normalize the heatmap between 0 & 1
     heatmap = np.maximum(heatmap, 0) / np.max(heatmap)
     return heatmap
-def GradCam(request):
+def GradCam():
     print("đang chạy Gradcam")
     classifier_layer_names = ["max_pooling2d_11","flatten_2",]
+    
+    model = load_model('C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/Grad_Models.h5')
+    print(model.summary())
     img_width=512
     img_height=512
     path_output_jpg = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/jpg/"
     path_output_dcm = "C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output_gradcam/dcm/"
-    model = load_model("C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/model/Grad_Models.h5")
     folder_path_input="C:/Users/Linh/Desktop/LuanVan/LuanVanBL/Django-React/GCAM_Classification/frontend/static/output/dcm/"
-    organ ="Head/"
+    organ ="Hip/"
     folder_path_input = folder_path_input+organ
     mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
     images_path = os.listdir(folder_path_input)
@@ -221,34 +152,8 @@ def GradCam(request):
             path_output_dcms, os.path.basename(src_fname)+'.dcm')
         save_images_jpg_gradcam(jetcam, path_image_jpg)
         save_images_dcm(photo, path_image_jpg, path_image_dcm)
-        
-        if(organNew == "Head"):
-            mutifiles_head.append(path_image_jpg)
-        elif(organNew == "Hip"):
-            mutifiles_hip.append(path_image_jpg)
-        elif(organNew == "Pelvis"):
-            mutifiles_pelvis.append(path_image_jpg)
-        elif(organNew == "Shoulder"):
-            mutifiles_shoulder.append(path_image_jpg)
-    data = {
-        'head_grad': mutifiles_head,
-        'hip_grad': mutifiles_hip,
-        'pelvis_grad': mutifiles_pelvis,
-        'shoulder_grad': mutifiles_shoulder,
-    }
-    dump_grad = json.dumps(data)
-    return HttpResponse(dump_grad, content_type='application/json')
+
+GradCam()     
 
 
-def hello(request):
-    m = ["a", "b", "c"]
-    data = {
-        'name': m,
-        'location': 'India',
-        'is_active': False,
-        'count': 28,
-    }
-    dump = json.dumps(data)
-    return HttpResponse(dump, content_type='application/json')
-def GradCamUI(request):
-    return render(request, 'frontend/index.html')
+

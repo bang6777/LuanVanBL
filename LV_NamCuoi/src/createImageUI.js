@@ -276,6 +276,7 @@ function createColorPresetSelector(
     "Cool to Warm (Extended)",
     "GBBr",
     "GYPi",
+    "BkRd",
     "GnBu",
     "GnBuPu",
     "GnRP",

@@ -180,10 +180,10 @@ const createViewer = (
     dataArray = image.getPointData().getScalars();
     lookupTableProxy = proxyManager.getLookupTable(dataArray.getName());
     if (dataArray.getNumberOfComponents() > 1) {
-      lookupTableProxy.setPresetName("Grayscale");
+      lookupTableProxy.setPresetName("jet");
     } else {
       // lookupTableProxy.setPresetName("Viridis (matplotlib)");
-      lookupTableProxy.setPresetName("Grayscale");
+      lookupTableProxy.setPresetName("jet");
     }
     piecewiseFunction = proxyManager.getPiecewiseFunction(dataArray.getName());
 
