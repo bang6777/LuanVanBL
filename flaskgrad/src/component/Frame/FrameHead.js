@@ -14,6 +14,7 @@ export default class FrameHead extends Component {
   }
   showImgHead(data) {
     let result = null;
+    console.log(data)
     if (data.head == null) {
       console.log("hello");
       result = null;

@@ -1,6 +1,7 @@
 from numpy import asarray
 from numpy import save
-from tensorflow.python.framework import ops
+# import tensorflow as tf
+# from tensorflow.python.framework import ops
 import numpy as np        
 import matplotlib.pyplot as plt    
 from sklearn.metrics import accuracy_score                                                                                                                                                                                                    
@@ -15,7 +16,6 @@ from keras.layers.advanced_activations import LeakyReLU
 import pydicom 
 import os
 import cv2
-import tensorflow as tf
 import pandas as pd
 import keras.backend as K
 from sklearn.model_selection import KFold
@@ -27,7 +27,8 @@ from keras.models import load_model
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 import json
 from flask import jsonify
-from django.http import HttpResponse
+
+import time
 from flask import Flask
 app = Flask(__name__)
 
@@ -190,39 +191,71 @@ def get_Img_Cls():
     data = clsClick()
     print(data)
     return jsonify(data)
-
+@app.route('/test')
+def get_Test():
+    data = {
+        "head": [
+            "Head2.jpg"
+        ], 
+        "hip": [
+            "Hip0.jpg", 
+            "Hip1.jpg"
+        ], 
+        "pelvis": [
+            "Pelvis3.jpg", 
+            "Pelvis4.jpg", 
+            "Pelvis5.jpg", 
+            "Pelvis6.jpg", 
+            "Pelvis7.jpg", 
+            "Pelvis8.jpg", 
+            "Pelvis9.jpg", 
+            "Pelvis10.jpg", 
+            "Pelvis11.jpg"
+        ], 
+        "shoulder": [
+            "Shoulder12.jpg", 
+            "Shoulder13.jpg", 
+                "Shoulder14.jpg", 
+                "Shoulder15.jpg", 
+                "Shoulder16.jpg", 
+                "Shoulder17.jpg"
+            ]
+        }
+    return jsonify(data)
 
 @app.route('/test')
 def getdata():
-    data = {
-  "head": [
-    "Head2.jpg"
-  ], 
-  "hip": [
-    "Hip0.jpg", 
-    "Hip1.jpg"
-  ], 
-  "pelvis": [
-    "Pelvis3.jpg", 
-    "Pelvis4.jpg", 
-    "Pelvis5.jpg", 
-    "Pelvis6.jpg", 
-    "Pelvis7.jpg", 
-    "Pelvis8.jpg", 
-    "Pelvis9.jpg", 
-    "Pelvis10.jpg", 
-    "Pelvis11.jpg"
-  ], 
-  "shoulder": [
-    "Shoulder12.jpg", 
-    "Shoulder13.jpg", 
-    "Shoulder14.jpg", 
-    "Shoulder15.jpg", 
-    "Shoulder16.jpg", 
-    "Shoulder17.jpg"
-  ]
-}
-    return jsonify(data)
+    # data = {
+    #     "head": [
+    #         "Head2.jpg"
+    #     ], 
+    #     "hip": [
+    #         "Hip0.jpg", 
+    #         "Hip1.jpg"
+    #     ], 
+    #     "pelvis": [
+    #         "Pelvis3.jpg", 
+    #         "Pelvis4.jpg", 
+    #         "Pelvis5.jpg", 
+    #         "Pelvis6.jpg", 
+    #         "Pelvis7.jpg", 
+    #         "Pelvis8.jpg", 
+    #         "Pelvis9.jpg", 
+    #         "Pelvis10.jpg", 
+    #         "Pelvis11.jpg"
+    #     ], 
+    #     "shoulder": [
+    #         "Shoulder12.jpg", 
+    #         "Shoulder13.jpg", 
+    #         "Shoulder14.jpg", 
+    #         "Shoulder15.jpg", 
+    #         "Shoulder16.jpg", 
+    #         "Shoulder17.jpg"
+    #     ]
+    #     }
+    print(time.time() - start)
+    return {'time': time.time()}
+    # return jsonify(data)
 
 
 @app.route('/GradCAM')
@@ -249,19 +282,13 @@ def getdataGrad():
         sunglasses = (np.maximum(sunglasses, 0) / sunglasses.max()) * 255.0
         sunglasses = np.uint8(sunglasses)
         sunglasses = cv2.resize(sunglasses, dsize=(512, 512), interpolation=cv2.INTER_CUBIC)
-        x=  sunglasses.reshape(1,img_width,img_height,1)
-     
+        x=  sunglasses.reshape(1,img_width,img_height,1)  
         heatmap = make_gradcam_heatmap(x,model,"conv2d_11",classifier_layer_names)
-
         heatmap = cv2.resize(heatmap, (sunglasses.shape[1], sunglasses.shape[0]))
-
         heatmap = np.uint8(255 * heatmap)
-
         heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
         w, h = sunglasses.shape
-
         new = np.empty((w, h, 3), dtype=sunglasses.dtype)
-
         new[:,:,2] = new[:,:,1] = new[:,:,0] = sunglasses
         # jetcam = (np.float32(grad_cam_img)+np.float32(heatmap))
         jetcam = (np.float32(heatmap) + new) / 2
@@ -291,3 +318,17 @@ def getdataGrad():
         'shoulder_grad': mutifiles_shoulder,
     }
     return jsonify(data)
+if __name__ == '__main__':
+    app.run()
+
+# import time
+# from flask import Flask
+
+# app = Flask(__name__)
+
+# @app.route('/test')
+# def get_current_time():
+#     print(time.time())
+#     return {'time': time.time()}
+# if __name__ == "__main__":
+#   app.run()

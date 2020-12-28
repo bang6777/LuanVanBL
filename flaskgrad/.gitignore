@@ -2,9 +2,11 @@
 
 # dependencies
 /node_modules
+/public
 /.pnp
 .pnp.js
-
+*.pyc
+__pycache__/
 # testing
 /coverage
 

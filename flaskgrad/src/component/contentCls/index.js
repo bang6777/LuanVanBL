@@ -13,7 +13,7 @@ class Content extends Component {
     };
   }
    Classification = () => {
-     fetch("/ClsClick")
+     fetch("/test")
       .then(response => {
         if (response.status > 400) {
           return this.setState(() => {
