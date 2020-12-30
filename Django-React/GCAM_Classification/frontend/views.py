@@ -72,6 +72,7 @@ def Predict_Human(request):
     img_width, img_height = 251, 251
     photos = list()
     mutifiles_head,mutifiles_hip,mutifiles_pelvis,mutifiles_shoulder = list(),list(),list(),list()
+    accuaracy_head,accuaracy_hip,accuaracy_pelvis,accuaracy_shoulder = list(),list(),list(),list()
     images_path = os.listdir(folder_path_input)
     for n, images in enumerate(images_path):
         # print("Images",images)
@@ -97,6 +98,10 @@ def Predict_Human(request):
         elif result == 3:
             output = "Shoulder"
         src_fname = output+str(n)
+        prediction=tf.keras.utils.to_categorical(result, num_classes=4, dtype='float32')
+        score = model.evaluate(test_image, prediction, verbose = 0) 
+        print('Test loss:', score[0]) 
+        print('Test accuracy:', 1-score[0])
         path_output_dcms = path_output_dcm + output
         print(path_output_dcms)
         path_image_jpg = os.path.join(
@@ -107,18 +112,26 @@ def Predict_Human(request):
         save_images_dcm(photo, path_image_jpg, path_image_dcm)
         if(output == "Head"):
             mutifiles_head.append(src_fname+'.jpg')
+            accuaracy_head.append(str(1-score[0]))
         elif(output == "Hip"):
             mutifiles_hip.append(src_fname+'.jpg')
+            accuaracy_hip.append(str(1-score[0]))
         elif(output == "Pelvis"):
             mutifiles_pelvis.append(src_fname+'.jpg')
+            accuaracy_pelvis.append(str(1-score[0]))
         elif(output == "Shoulder"):
             mutifiles_shoulder.append(src_fname+'.jpg')
+            accuaracy_shoulder.append(str(1-score[0]))
 
     data = {
         'head': mutifiles_head,
         'hip': mutifiles_hip,
         'pelvis': mutifiles_pelvis,
         'shoulder': mutifiles_shoulder,
+        "accuaracy_head": accuaracy_head,
+        "accuaracy_hip":accuaracy_hip,
+        "accuaracy_pelvis":accuaracy_pelvis,
+        "accuaracy_shoulder":accuaracy_shoulder
     }
     dump = json.dumps(data)
     return HttpResponse(dump, content_type='application/json')

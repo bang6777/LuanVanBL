@@ -16,13 +16,27 @@ export default class Frame1 extends Component {
   }
   showImgHead(data) {
     let result = null;
-    if (data.head == null) {
+    let resultscore = null;
+    let result_img =null
+    if (data.head == null & data.accuaracy_head==null) {
       result = null;
     } else {
-      result = data.head.map(function (h, index) {
+      resultscore = data.accuaracy_head.map(function (h, index) {
         console.log("dasha", h);
-        return <img key={index} src={"/static/output/jpg/" + h}></img>;
+        return 
+        <div>
+          <h1>{h}</h1>
+          </div>;
       });
+      result_img = data.head.map(function (h, index) {
+        console.log("dasha", h);
+        return 
+        <div>
+          <img key={index} src={"/static/output/jpg/" + h}></img>
+          </div>;
+      });
+      result = resultscore+result_img;
+      console.log("result", result);
     }
     return result;
   }
